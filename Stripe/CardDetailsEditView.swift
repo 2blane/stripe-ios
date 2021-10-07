@@ -147,6 +147,10 @@ class CardDetailsEditView: UIView, CardScanningViewDelegate {
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
             formView.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
+        
+        //GEOJI EDITS - AUTOMATICALLY TAP THE SCAN CARD BUTTON
+        let bb = UIButton()
+        self.scanButtonTapped(bb)
     }
 
     required init?(coder: NSCoder) {

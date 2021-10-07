@@ -21,8 +21,6 @@
 		B63707662510578D0094499F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B63707642510578D0094499F /* LaunchScreen.storyboard */; };
 		B637077525107FBF0094499F /* Stripe.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B637077425107FBF0094499F /* Stripe.framework */; };
 		B637077625107FBF0094499F /* Stripe.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B637077425107FBF0094499F /* Stripe.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B67982B2268FD91C0058F7C8 /* StripeCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B67982B1268FD91C0058F7C8 /* StripeCore.framework */; };
-		B67982B3268FD91C0058F7C8 /* StripeCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B67982B1268FD91C0058F7C8 /* StripeCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B67BC53D257AB9D300B7349B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67BC53C257AB9D300B7349B /* ViewController.swift */; };
 		B67BC542257ABF8D00B7349B /* ExampleCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67BC541257ABF8D00B7349B /* ExampleCheckoutViewController.swift */; };
 		B68A9E32257D8E8800E904B5 /* ExampleCustomCheckoutViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68A9E31257D8E8800E904B5 /* ExampleCustomCheckoutViewController.swift */; };
@@ -482,14 +480,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "PaymentSheet Example/PaymentSheet Example.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Y28TH9SHX7;
+				DEVELOPMENT_TEAM = A3QD4RAUQL;
 				INFOPLIST_FILE = "$(SRCROOT)/PaymentSheet Example/PaymentSheet Example/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.stripe.PaymentSheet-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.geoji.PaymentSheet-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;

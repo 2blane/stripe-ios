@@ -173,24 +173,31 @@ public class STPCardFormView: STPFormView {
         get {
             guard case .valid = numberField.validator.validationState,
                   let cardNumber = numberField.validator.inputValue,
-                  case .valid = cvcField.validator.validationState,
-                  let cvc = cvcField.validator.inputValue,
+                  //GEOJI EDIT - remove the cvc check
+                  //case .valid = cvcField.validator.validationState,
+                  //let cvc = cvcField.validator.inputValue,
                   case .valid = expiryField.validator.validationState,
                   let expiryStrings = expiryField.expiryStrings,
                   let monthInt = Int(expiryStrings.month),
-                  let yearInt = Int(expiryStrings.year),
-                  let billingDetails = billingAddressSubForm.billingDetails else {
+                  let yearInt = Int(expiryStrings.year)
+                  //GEOJI EDIT - empty billing parameters
+                  /*
+                  let _ = billingAddressSubForm.billingDetails*/ else {
                 return nil
             }
             
+            //GEOJI EDIT - empty billing parameters
+            let bp = STPPaymentMethodBillingDetails()
+            
             let cardParams = STPPaymentMethodCardParams()
             cardParams.number = cardNumber
-            cardParams.cvc = cvc
+            //GEOJI EDIT - remove the cvc
+            //cardParams.cvc = cvc
             cardParams.expMonth = NSNumber(value: monthInt)
             cardParams.expYear = NSNumber(value: yearInt)
             
             return STPPaymentMethodParams(
-                card: cardParams, billingDetails: billingDetails, metadata: nil)
+                card: cardParams, billingDetails: bp, metadata: nil)
         }
         set {
             if let card = newValue?.card {
@@ -305,8 +312,9 @@ public class STPCardFormView: STPFormView {
             }
         }
         
-        var rows: [[STPFormInput]] = [[numberField],
-                                      [expiryField, cvcField]]
+        //GEOJI EDIT.
+        //var rows: [[STPFormInput]] = [[numberField], [expiryField, cvcField]]
+        var rows: [[STPFormInput]] = [[numberField], [expiryField]]
         if mergeBillingFields {
             rows.append(contentsOf: billingAddressSubForm.formSection.rows)
         }
@@ -522,12 +530,15 @@ extension STPCardFormView {
                 line1Field = nil
                 line2Field = nil
                 cityField = nil
-                rows = [
+                //GEOJI EDIT - Removed old rows - made new rows.
+                /*rows = [
                     [countryPickerField],
                     [postalCodeField],
-                ]
-                title = STPLocalizedString(
-                    "Country or region", "Country selector and postal code entry form header title")
+                ]*/
+                rows = []
+                //GEOJI EDIT - Removed old rows - made new rows.
+                title = STPLocalizedString("", "")
+                //title = STPLocalizedString("Country or region", "Country selector and postal code entry form header title")
                 
             case .required:
                 stateField = STPGenericInputTextField(

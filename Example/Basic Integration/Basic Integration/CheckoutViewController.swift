@@ -11,7 +11,7 @@ import Stripe
 import UIKit
 
 class CheckoutViewController: UIViewController {
-
+    
     // 1) To get started with this demo, first head to https://dashboard.stripe.com/account/apikeys
     // and copy your "Test Publishable Key" (it looks like pk_test_abcdef) into the line below.
     var stripePublishableKey = ""
@@ -20,18 +20,18 @@ class CheckoutViewController: UIViewController {
     // https://github.com/stripe/example-mobile-backend/tree/v18.1.0, click "Deploy to Heroku", and follow
     // the instructions (don't worry, it's free). Replace nil on the line below with your
     // Heroku URL (it looks like https://blazing-sunrise-1234.herokuapp.com ).
-    var backendBaseURL: String? = nil
-
+    var backendBaseURL: String? = "https://stripe-test-blane.herokuapp.com"
+    
     // 3) Optionally, to enable Apple Pay, follow the instructions at https://stripe.com/docs/mobile/apple-pay
     // to create an Apple Merchant ID. Replace nil on the line below with it (it looks like merchant.com.yourappname).
     var appleMerchantID: String? = ""
-
+    
     // These values will be shown to the user when they purchase with Apple Pay.
     let companyName = "Emoji Apparel"
     let paymentCurrency: String
-
+    
     let paymentContext: STPPaymentContext
-
+    
     let theme: STPTheme
     let tableView: UITableView
     let paymentRow: CheckoutRowView
@@ -60,7 +60,7 @@ class CheckoutViewController: UIViewController {
                 }, completion: nil)
         }
     }
-
+    
     init(products: [Product], settings: Settings) {
         if let stripePublishableKey = UserDefaults.standard.string(forKey: "StripePublishableKey") {
             self.stripePublishableKey = stripePublishableKey
@@ -160,11 +160,11 @@ class CheckoutViewController: UIViewController {
         self.tableView.delegate = self
         self.tableView.dataSource = self
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -271,7 +271,7 @@ class CheckoutViewController: UIViewController {
         // to set up with the initial state
         paymentContextDidChange(paymentContext)
     }
-
+    
     @objc func didTapBuy() {
         self.paymentInProgress = true
         self.paymentContext.requestPayment()
