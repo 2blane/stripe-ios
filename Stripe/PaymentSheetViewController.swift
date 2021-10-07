@@ -299,7 +299,8 @@ class PaymentSheetViewController: UIViewController {
         switch mode {
         case .addingNew:
             guard let newPaymentOption = addPaymentMethodViewController.paymentOption else {
-                assertionFailure()
+                //GEOJI EDITS - no payment option
+                //assertionFailure()
                 return
             }
             pay(with: newPaymentOption)
@@ -307,7 +308,8 @@ class PaymentSheetViewController: UIViewController {
             guard
                 let selectedPaymentOption = savedPaymentOptionsViewController.selectedPaymentOption
             else {
-                assertionFailure()
+                //GEOJI EDITS - no payment option
+                //assertionFailure()
                 return
             }
             pay(with: selectedPaymentOption)
@@ -451,6 +453,10 @@ extension PaymentSheetViewController: AddPaymentMethodViewControllerDelegate {
     func didUpdate(_ viewController: AddPaymentMethodViewController) {
         error = nil  // clear error
         updateUI()
+        
+        //GEOJI EDITS - AutoPay if necessary
+        print("Auto-Pay if necessary")
+        self.didTapBuyButton()
     }
 }
 

@@ -243,6 +243,14 @@ class STPCardScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         do {
             try self.captureDevice?.lockForConfiguration()
             self.captureDevice?.autoFocusRangeRestriction = .near
+            //GEOJI EDIT - turn on the backlight if necessary.
+            if self.captureDevice?.isLowLightBoostSupported ?? false {
+                print("LOW LIGHT BOOST ENABLED")
+                self.captureDevice?.automaticallyEnablesLowLightBoostWhenAvailable = true
+            }
+            if self.captureDevice?.isTorchModeSupported(AVCaptureDevice.TorchMode.auto) ?? false {
+                self.captureDevice?.torchMode = .auto
+            }
         } catch {
         }
     }
