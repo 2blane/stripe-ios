@@ -162,6 +162,9 @@ class STPCardScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
 
     deinit {
+        //GEOJI EDITS - stop the light on the camera
+        self.destroyCamera()
+        
         if isScanning {
             captureDevice?.unlockForConfiguration()
             captureSession?.stopRunning()
@@ -169,6 +172,9 @@ class STPCardScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     }
 
     func stopWithError(_ error: Error?) {
+        //GEOJI EDITS - stop the light on the camera
+        self.destroyCamera()
+        
         if isScanning {
             finish(with: nil, error: error)
         }
@@ -243,7 +249,7 @@ class STPCardScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         do {
             try self.captureDevice?.lockForConfiguration()
             self.captureDevice?.autoFocusRangeRestriction = .near
-            //GEOJI EDIT - turn on the backlight if necessary.
+            //GEOJI EDITS - turn on the backlight if necessary.
             if self.captureDevice?.isLowLightBoostSupported ?? false {
                 print("LOW LIGHT BOOST ENABLED")
                 self.captureDevice?.automaticallyEnablesLowLightBoostWhenAvailable = true
@@ -253,6 +259,25 @@ class STPCardScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
             }
         } catch {
         }
+        
+        //GEOJI EDITS - unlock control of the camera
+        captureDevice?.unlockForConfiguration()
+    }
+    
+    //GEOJI EDITS - turn off the light on the camera
+    func destroyCamera() {
+        do {
+            try self.captureDevice?.lockForConfiguration()
+            if self.captureDevice?.isLowLightBoostSupported ?? false {
+                print("LOW LIGHT BOOST ENABLED")
+                self.captureDevice?.automaticallyEnablesLowLightBoostWhenAvailable = false
+            }
+            if self.captureDevice?.isTorchModeSupported(AVCaptureDevice.TorchMode.off) ?? false {
+                self.captureDevice?.torchMode = .off
+            }
+        } catch {
+        }
+        captureDevice?.unlockForConfiguration()
     }
 
     // MARK: Processing

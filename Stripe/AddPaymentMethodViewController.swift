@@ -195,6 +195,15 @@ class AddPaymentMethodViewController: UIViewController {
         paymentMethodElement.delegate = self
         return paymentMethodElement
     }
+    
+    //GEOJI EDITS - cleans up the view as it is about to be dismissed.
+    @available(iOS 13, macCatalyst 14, *)
+    public func cleanup() {
+        print("Cleanup on AddPaymentMethodViewController!")
+        if let pmf = paymentMethodFormElement as? CardDetailsEditView {
+            pmf.cleanup()
+        }
+    }
 }
 
 // MARK: - PaymentMethodTypeCollectionViewDelegate

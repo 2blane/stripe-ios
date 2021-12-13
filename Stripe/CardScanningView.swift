@@ -242,4 +242,9 @@ class CardScanningView: UIView, STPCardScannerDelegate {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
+    
+    //GEOJI EDITS - cleans up the view as it is about to be dismissed.
+    public func cleanup() {
+        self.cardScanner?.stop()
+    }
 }

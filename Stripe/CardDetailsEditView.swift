@@ -163,6 +163,12 @@ class CardDetailsEditView: UIView, CardScanningViewDelegate {
             formView.isUserInteractionEnabled = isUserInteractionEnabled
         }
     }
+    
+    //GEOJI EDITS - cleans up the view as it is about to be dismissed.
+    @available(iOS 13, macCatalyst 14, *)
+    public func cleanup() {
+        self.cardScanningView?.stop()
+    }
 }
 // MARK: - Events
 /// :nodoc:

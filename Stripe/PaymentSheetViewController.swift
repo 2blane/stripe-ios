@@ -95,6 +95,16 @@ class PaymentSheetViewController: UIViewController {
             didTap: didTapBuyButton)
         return button
     }()
+    
+    //GEOJI EDITS - turn off the camera
+    func goingToDismiss() {
+        print("Going to Dismiss! Cleanup the camera")
+        if self.mode == .addingNew {
+            if #available(iOS 13.0, macCatalyst 14.0, *) {
+                addPaymentMethodViewController.cleanup()
+            }
+        }
+    }
 
     // MARK: - Init
 
@@ -380,6 +390,8 @@ extension PaymentSheetViewController: BottomSheetContentViewController {
 
     func didTapOrSwipeToDismiss() {
         if isDismissable {
+            //GEOJI EDITS - dismiss the view and cleanup the camera.
+            self.goingToDismiss()
             delegate?.paymentSheetViewControllerDidCancel(self)
         }
     }
@@ -463,7 +475,10 @@ extension PaymentSheetViewController: AddPaymentMethodViewControllerDelegate {
 // MARK: - SheetNavigationBarDelegate
 /// :nodoc:
 extension PaymentSheetViewController: SheetNavigationBarDelegate {
+    
     func sheetNavigationBarDidClose(_ sheetNavigationBar: SheetNavigationBar) {
+        //GEOJI EDITS - going to dismiss - make sure the camera light is off
+        self.goingToDismiss()
         delegate?.paymentSheetViewControllerDidCancel(self)
         // If the customer was editing saved payment methods, exit edit mode
         if savedPaymentOptionsViewController.isRemovingPaymentMethods {
