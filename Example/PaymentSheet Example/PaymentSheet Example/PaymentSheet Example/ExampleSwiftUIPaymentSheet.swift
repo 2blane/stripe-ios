@@ -66,6 +66,10 @@ class MyBackendModel: ObservableObject {
                 configuration.customer = .init(
                     id: customerId, ephemeralKeySecret: customerEphemeralKeySecret)
                 configuration.returnURL = "payments-example://stripe-redirect"
+                
+                //GEOJI EDITS - set the showCVCZip stuff
+                configuration.showCVCZip = false
+                
                 DispatchQueue.main.async {
                     self.paymentSheet = PaymentSheet(
                         paymentIntentClientSecret: paymentIntentClientSecret,

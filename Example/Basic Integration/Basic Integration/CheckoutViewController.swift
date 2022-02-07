@@ -14,8 +14,8 @@ class CheckoutViewController: UIViewController {
     
     // 1) To get started with this demo, first head to https://dashboard.stripe.com/account/apikeys
     // and copy your "Test Publishable Key" (it looks like pk_test_abcdef) into the line below.
-    var stripePublishableKey = ""
-
+    var stripePublishableKey = "pk_test_51IB3RsDkSyEZXQZ0htD4HzMTzpUJYgP5DfsveN65X01enYUrDqBNDwvsqfHl7htlBCGi6gXvL6WJntUwxD80aNtL00jqpAUFag"
+    
     // 2) Next, optionally, to have this demo save your user's payment details, head to
     // https://github.com/stripe/example-mobile-backend/tree/v18.1.0, click "Deploy to Heroku", and follow
     // the instructions (don't worry, it's free). Replace nil on the line below with your

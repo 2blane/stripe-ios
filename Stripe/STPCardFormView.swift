@@ -171,33 +171,56 @@ public class STPCardFormView: STPFormView {
     @objc
     public internal(set) var cardParams: STPPaymentMethodParams? {
         get {
-            guard case .valid = numberField.validator.validationState,
-                  let cardNumber = numberField.validator.inputValue,
-                  //GEOJI EDITS - remove the cvc check
-                  //case .valid = cvcField.validator.validationState,
-                  //let cvc = cvcField.validator.inputValue,
-                  case .valid = expiryField.validator.validationState,
-                  let expiryStrings = expiryField.expiryStrings,
-                  let monthInt = Int(expiryStrings.month),
-                  let yearInt = Int(expiryStrings.year)
-                  //GEOJI EDITS - empty billing parameters
-                  /*
-                  let _ = billingAddressSubForm.billingDetails*/ else {
-                return nil
+            if self.showCVCZip {
+                guard case .valid = numberField.validator.validationState,
+                      let cardNumber = numberField.validator.inputValue,
+                      case .valid = cvcField.validator.validationState,
+                      let cvc = cvcField.validator.inputValue,
+                      case .valid = expiryField.validator.validationState,
+                      let expiryStrings = expiryField.expiryStrings,
+                      let monthInt = Int(expiryStrings.month),
+                      let yearInt = Int(expiryStrings.year),
+                      let billingDetails = billingAddressSubForm.billingDetails else {
+                    return nil
+                }
+                
+                let cardParams = STPPaymentMethodCardParams()
+                cardParams.number = cardNumber
+                cardParams.cvc = cvc
+                cardParams.expMonth = NSNumber(value: monthInt)
+                cardParams.expYear = NSNumber(value: yearInt)
+                
+                return STPPaymentMethodParams(
+                    card: cardParams, billingDetails: billingDetails, metadata: nil)
+            } else {
+                guard case .valid = numberField.validator.validationState,
+                      let cardNumber = numberField.validator.inputValue,
+                      //GEOJI EDITS - remove the cvc check
+                      //case .valid = cvcField.validator.validationState,
+                      //let cvc = cvcField.validator.inputValue,
+                      case .valid = expiryField.validator.validationState,
+                      let expiryStrings = expiryField.expiryStrings,
+                      let monthInt = Int(expiryStrings.month),
+                      let yearInt = Int(expiryStrings.year)
+                      //GEOJI EDITS - empty billing parameters
+                      /*
+                      let _ = billingAddressSubForm.billingDetails*/ else {
+                    return nil
+                }
+                
+                //GEOJI EDITS - empty billing parameters
+                let bp = STPPaymentMethodBillingDetails()
+                
+                let cardParams = STPPaymentMethodCardParams()
+                cardParams.number = cardNumber
+                //GEOJI EDITS - remove the cvc
+                //cardParams.cvc = cvc
+                cardParams.expMonth = NSNumber(value: monthInt)
+                cardParams.expYear = NSNumber(value: yearInt)
+                
+                return STPPaymentMethodParams(
+                    card: cardParams, billingDetails: bp, metadata: nil)
             }
-            
-            //GEOJI EDITS - empty billing parameters
-            let bp = STPPaymentMethodBillingDetails()
-            
-            let cardParams = STPPaymentMethodCardParams()
-            cardParams.number = cardNumber
-            //GEOJI EDITS - remove the cvc
-            //cardParams.cvc = cvc
-            cardParams.expMonth = NSNumber(value: monthInt)
-            cardParams.expYear = NSNumber(value: yearInt)
-            
-            return STPPaymentMethodParams(
-                card: cardParams, billingDetails: bp, metadata: nil)
         }
         set {
             if let card = newValue?.card {
@@ -242,6 +265,8 @@ public class STPCardFormView: STPFormView {
     
     let style: STPCardFormViewStyle
     
+    let showCVCZip: Bool
+    
     /**
      Public initializer for `STPCardFormView`.
      @param style The visual style to use for this instance. @see STPCardFormViewStyle
@@ -268,15 +293,16 @@ public class STPCardFormView: STPFormView {
         billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel,
         includeCardScanning: Bool = true,
         mergeBillingFields: Bool = false,
-        style: STPCardFormViewStyle = .standard
+        style: STPCardFormViewStyle = .standard,
+        showCVCZip: Bool = true //GEOJI EDITS - add the showCVCZip field
     ) {
         self.init(numberField: STPCardNumberInputTextField(),
                   cvcField: STPCardCVCInputTextField(),
                   expiryField: STPCardExpiryInputTextField(),
-                  billingAddressSubForm: BillingAddressSubForm(billingAddressCollection: billingAddressCollection),
+                  billingAddressSubForm: BillingAddressSubForm(billingAddressCollection: billingAddressCollection, showCVCZip: showCVCZip),
                   includeCardScanning: includeCardScanning,
                   mergeBillingFields: mergeBillingFields,
-                  style: style)
+                  style: style, showCVCZip: showCVCZip)
     }
     
     required init(numberField: STPCardNumberInputTextField,
@@ -285,13 +311,16 @@ public class STPCardFormView: STPFormView {
                   billingAddressSubForm: BillingAddressSubForm,
                   includeCardScanning: Bool,
                   mergeBillingFields: Bool,
-                  style: STPCardFormViewStyle = .standard
+                  style: STPCardFormViewStyle = .standard,
+                  showCVCZip: Bool = false //GEOJI EDITS - add the showCVCZip field
     ) {
         self.numberField = numberField
         self.cvcField = cvcField
         self.expiryField = expiryField
         self.billingAddressSubForm = billingAddressSubForm
         self.style = style
+        //GEOJI EDITS - set the showCVCZip stuff
+        self.showCVCZip = showCVCZip
         
         var button: UIButton? = nil
         if includeCardScanning {
@@ -312,9 +341,13 @@ public class STPCardFormView: STPFormView {
             }
         }
         
-        //GEOJI EDITS.
-        //var rows: [[STPFormInput]] = [[numberField], [expiryField, cvcField]]
-        var rows: [[STPFormInput]] = [[numberField], [expiryField]]
+        //GEOJI EDITS - set the rows based on if we are showing CVC & Zip.
+        var rows: [[STPFormInput]] = []
+        if self.showCVCZip {
+            rows = [[numberField], [expiryField, cvcField]]
+        } else {
+            rows = [[numberField], [expiryField]]
+        }
         if mergeBillingFields {
             rows.append(contentsOf: billingAddressSubForm.formSection.rows)
         }
@@ -520,7 +553,14 @@ extension STPCardFormView {
             return billingDetails
         }
         
-        required init(billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel) {
+        //GEOJI EDITS - variable for showCVCZip field
+        let showCVCZip: Bool
+        
+        //GEOJI EDITS - added showCVCZip as a field
+        required init(billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel, showCVCZip: Bool) {
+            //GEOJI EDITS - set the showCVCZip field
+            self.showCVCZip = showCVCZip
+            
             let rows: [[STPInputTextField]]
             let title: String
             switch billingAddressCollection {
@@ -530,15 +570,18 @@ extension STPCardFormView {
                 line1Field = nil
                 line2Field = nil
                 cityField = nil
-                //GEOJI EDITS - Removed old rows - made new rows.
-                /*rows = [
-                    [countryPickerField],
-                    [postalCodeField],
-                ]*/
-                rows = []
-                //GEOJI EDITS - Removed old rows - made new rows.
-                title = STPLocalizedString("", "")
-                //title = STPLocalizedString("Country or region", "Country selector and postal code entry form header title")
+                
+                //GEOJI EDITS - show or hide the CVC and Zip if necessary
+                if showCVCZip {
+                    rows = [
+                        [countryPickerField],
+                        [postalCodeField],
+                    ]
+                    title = STPLocalizedString("Country or region", "Country selector and postal code entry form header title")
+                } else {
+                    rows = []
+                    title = STPLocalizedString("", "")
+                }
                 
             case .required:
                 stateField = STPGenericInputTextField(

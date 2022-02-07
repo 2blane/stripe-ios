@@ -33,7 +33,7 @@ import PassKit
 public class PaymentSheet {
     /// This contains all configurable properties of PaymentSheet
     public let configuration: Configuration
-
+    
     /// The most recent error encountered by the customer, if any.
     public private(set) var mostRecentError: Error?
 

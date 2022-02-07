@@ -18,6 +18,8 @@ class CardDetailsEditView: UIView, CardScanningViewDelegate {
 
     let billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel
     let merchantDisplayName: String
+    //GEOJI EDITS - adds the showCVCZip variable.
+    let showCVCZip: Bool
 
     var paymentMethodParams: STPPaymentMethodParams? {
         return formView.cardParams
@@ -36,7 +38,7 @@ class CardDetailsEditView: UIView, CardScanningViewDelegate {
     }
 
     lazy var formView: STPCardFormView = {
-        let formView = STPCardFormView(billingAddressCollection: billingAddressCollection)
+        let formView = STPCardFormView(billingAddressCollection: billingAddressCollection, showCVCZip: self.showCVCZip)
         formView.internalDelegate = self
         return formView
     }()
@@ -103,14 +105,18 @@ class CardDetailsEditView: UIView, CardScanningViewDelegate {
             }
         }
     }
-
+    
     init(
         shouldDisplaySaveThisPaymentMethodCheckbox: Bool,
         billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel,
-        merchantDisplayName: String
+        merchantDisplayName: String,
+        showCVCZip: Bool //GEOJI EDITS - adds the showCVCZip field
     ) {
         self.billingAddressCollection = billingAddressCollection
         self.merchantDisplayName = merchantDisplayName
+        //GEOJI EDITS - set the showCVCZip field
+        self.showCVCZip = showCVCZip
+        
         super.init(frame: .zero)
 
         var cardScanningPlaceholderView = UIView()

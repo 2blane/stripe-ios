@@ -98,10 +98,12 @@ extension PaymentSheet {
     /// This is a convenience wrapper for the .paymentSheet() ViewModifier.
     /// - Parameter paymentSheet: A PaymentSheet to present.
     /// - Parameter onCompletion: Called with the result of the payment after the payment sheet is dismissed.
+    /// - Parameter quickCheckout: If true, then the CVC and Zip Code are not part of the form field.
     /// - Parameter content: The content of the view.
     public struct PaymentButton<Content: View>: View {
         private let paymentSheet: PaymentSheet
         private let onCompletion: (PaymentSheetResult) -> Void
+        private let quickCheckout: Bool = false
         private let content: Content
 
         @State private var showingPaymentSheet = false

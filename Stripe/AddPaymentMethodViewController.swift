@@ -170,7 +170,8 @@ class AddPaymentMethodViewController: UIViewController {
                 return CardDetailsEditView(
                     shouldDisplaySaveThisPaymentMethodCheckbox: saveMode == .userSelectable,
                     billingAddressCollection: configuration.billingAddressCollectionLevel,
-                    merchantDisplayName: configuration.merchantDisplayName
+                    merchantDisplayName: configuration.merchantDisplayName,
+                    showCVCZip: configuration.showCVCZip //GEOJI EDITS - set the showCVCZip based on the config.
                 )
             case .bancontact:
                 return FormElement.makeBancontact(configuration: formConfiguration)
