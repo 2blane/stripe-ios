@@ -6,7 +6,6 @@
 //  Copyright © 2020 Stripe, Inc. All rights reserved.
 //
 
-import StripeCoreTestUtils
 @testable import Stripe
 
 class STPPaymentMethodNetBankingTests: XCTestCase {

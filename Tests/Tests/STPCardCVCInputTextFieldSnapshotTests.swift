@@ -22,7 +22,7 @@ class STPCardCVCInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.sizeToFit()
         field.frame.size.width = 200
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testIncomplete() {
@@ -32,7 +32,7 @@ class STPCardCVCInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.text = "1"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testValid() {
@@ -42,7 +42,7 @@ class STPCardCVCInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.text = "123"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testInvalid() {
@@ -52,6 +52,6 @@ class STPCardCVCInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.text = "12345"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 }

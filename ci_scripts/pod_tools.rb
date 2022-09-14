@@ -5,9 +5,15 @@ require 'colorize'
 require 'mail'
 require 'open3'
 require 'yaml'
-require 'json'
 
-PODSPECS = YAML.load_file("modules.yaml")['pod_push_order']
+# All podspecs that get pushed to Cocoapods in the order of dependencies such
+# that a pods dependencies must appear before it in the array.
+# This is the order that podspecs will be pushed to `pod trunk`.
+PODSPECS = [
+  "StripeCore.podspec",
+  "Stripe.podspec",
+  "StripeIdentity.podspec",
+]
 
 USAGE =
 "#{"Usage:".underline}\n"\
@@ -16,15 +22,14 @@ USAGE =
 "\n"\
 "#{"Commands:".underline}\n"\
 "\n"\
-"\t#{"push".green}\n"\
+"\t#{"push".green} [#{"--repo".blue} #{"REPO".magenta}]\n"\
 "\n"\
 "\t\tPushes all podspecs to `trunk` in order by dependencies.\n"\
 "\n"\
 "\n"\
-"\t#{"add-all-owners".green} [#{"POD".magenta}]\n"\
+"\t#{"add-all-owners".green} #{"POD".magenta}\n"\
 "\n"\
 "\t\tAdds all the owners of the `Stripe` pod as owners of #{"`POD`".magenta}.\n"\
-"\t\tIf no pod is specified, adds all owners to all pods other than `Stripe`.\n"\
 "\n"\
 "\n"\
 "\t#{"add-owner".green} #{"OWNER-EMAIL".magenta}\n"\
@@ -47,20 +52,7 @@ def push
   "#{PODSPECS.map { |s| s.underline }.join(" ")}"
 
   PODSPECS.each do |podspec|
-    stdout, stderr, status = Open3.capture3("pod spec cat #{podspec}")
-    abort "Failed on pod spec cat #{podspec}" unless status.success?
-    latest_pod_spec = JSON.parse(stdout)
-    latest_pod_version = latest_pod_spec['version']
-    file_version = File.open('VERSION').first.strip
-    if file_version == latest_pod_version
-      puts "No need to upload: #{podspec}.  Latest version is already #{latest_pod_version}"
-    else
-      system "pod trunk push #{podspec} --synchronous"
-      unless $?.success?
-        abort "Unable to push pod #{podspec}.\n"\
-              "If the spec failed to validate due to not finding a compatible version of a pod that was just pushed, wait a few minutes and try again."
-      end
-    end
+    system "pod trunk push #{podspec} --synchronous"
   end
 end
 
@@ -87,36 +79,12 @@ def add_all_owners(pod)
   # Add owners for all pods in repo
   updated_owners=""
   owner_emails.each do |ownerEmail|
-    puts "Adding #{ownerEmail.blue} to #{pod.magenta} owners."
+    puts "Adding #{ownerEmail.magenta} to #{pod.magenta} owners."
     updated_owners=`pod trunk add-owner #{pod} #{ownerEmail}`
-
-    unless $?.success?
-      raise StandardError.new updated_owners
-    end
   end
 
   puts "Done updating owners:"
   puts updated_owners
-end
-
-# Adds all the owners of the `Stripe` pod as owners of the given pod.
-def add_all_owners_all_pods()
-  pods = all_pods_in_repo - ["Stripe"]
-  failed_pods = []
-  pods.each do |pod|
-    begin
-      add_all_owners(pod)
-    rescue => e
-      puts e.message.red
-      failed_pods.append(pod)
-    end
-  end
-
-  unless failed_pods.empty?
-    abort "Unable to add owners to pods: #{failed_pods.join(", ")}\n".red +
-          "Please run the following command for each of the above listed pods:\n" +
-          "\tbundle exec ruby #{__FILE__} add-all-owners POD"
-  end
 end
 
 # Adds the specified registered user as an owner of all pods in this repo.
@@ -150,7 +118,7 @@ elsif ARGV[0] == "push"
   push
 elsif ARGV[0] == "add-all-owners"
   if ARGV.length < 2
-    add_all_owners_all_pods()
+    abort("#{"Please specify a pod name.".red}\n\n#{USAGE}")
   else
     add_all_owners(ARGV[1])
   end

@@ -123,7 +123,9 @@ class STPKeyboardDetectingViewController: UIViewController {
             var contentInsets = scrollView.contentInset
             var scrollIndicatorInsets: UIEdgeInsets = .zero
             #if !TARGET_OS_MACCATALYST
-                scrollIndicatorInsets = scrollView.verticalScrollIndicatorInsets
+                if #available(iOS 11.1, *) {
+                    scrollIndicatorInsets = scrollView.verticalScrollIndicatorInsets
+                }
             #else
                 scrollIndicatorInsets = scrollView.scrollIndicatorInsets
             #endif

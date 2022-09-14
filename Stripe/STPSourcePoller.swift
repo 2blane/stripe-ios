@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-@_spi(STP) import StripeCore
 
 @available(iOSApplicationExtension, unavailable)
 @available(macCatalystApplicationExtension, unavailable)

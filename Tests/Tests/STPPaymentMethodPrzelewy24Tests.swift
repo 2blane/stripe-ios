@@ -5,7 +5,6 @@
 //  Created by Vineet Shah on 4/23/20.
 //  Copyright © 2020 Stripe, Inc. All rights reserved.
 //
-import StripeCoreTestUtils
 @testable import Stripe
 
 class STPPaymentMethodPrzelewy24Tests: XCTestCase {

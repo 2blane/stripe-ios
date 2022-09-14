@@ -19,7 +19,7 @@
         productUsage.insert(klass.stp_analyticsIdentifier)
     }
 
-    public func log(analytic: Analytic, apiClient: STPAPIClient = .shared) {
+    public func log(analytic: Analytic) {
         loggedAnalytics.append(analytic)
     }
 

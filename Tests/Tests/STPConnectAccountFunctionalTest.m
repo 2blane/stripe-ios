@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-@import StripeCoreTestUtils;
+
 #import "STPFixtures.h"
 #import "STPTestingAPIClient.h"
 
@@ -75,7 +75,7 @@
         }
     }];
 
-    [self waitForExpectationsWithTimeout:TestConstants.STPTestingNetworkRequestTimeout handler:nil];
+    [self waitForExpectationsWithTimeout:STPTestingNetworkRequestTimeout handler:nil];
 }
 
 @end

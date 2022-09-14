@@ -9,7 +9,6 @@
 #import <FBSnapshotTestCase/FBSnapshotTestCase.h>
 
 
-#import "STPTestUtils.h"
 
 
 
@@ -32,7 +31,7 @@
     STPLabeledFormTextFieldView *labeledFormField = [[STPLabeledFormTextFieldView alloc] initWithFormLabel:@"Test Label" textField:formTextField];
     labeledFormField.formBackgroundColor = [UIColor whiteColor];
     labeledFormField.frame = CGRectMake(0.f, 0.f, 320.f, 44.f);
-    STPSnapshotVerifyView(labeledFormField, @"STPLabeledFormTextFieldView.defaultAppearance");
+    FBSnapshotVerifyView(labeledFormField, @"STPLabeledFormTextFieldView.defaultAppearance");
 }
 
 @end

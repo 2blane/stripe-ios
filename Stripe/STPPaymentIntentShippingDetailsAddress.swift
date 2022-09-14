@@ -72,6 +72,7 @@ public class STPPaymentIntentShippingDetailsAddress: NSObject {
         self.allResponseFields = allResponseFields
         super.init()
     }
+
 }
 
 // MARK: - STPAPIResponseDecodable

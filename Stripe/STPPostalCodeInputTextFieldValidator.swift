@@ -7,8 +7,6 @@
 //
 
 import UIKit
-@_spi(STP) import StripeCore
-@_spi(STP) import StripeUICore
 
 class STPPostalCodeInputTextFieldValidator: STPInputTextFieldValidator {
 
@@ -35,20 +33,17 @@ class STPPostalCodeInputTextFieldValidator: STPInputTextFieldValidator {
             updateValidationState()
         }
     }
-    
-    let postalCodeRequirement: STPPostalCodeRequirement
-    
-    required init(postalCodeRequirement: STPPostalCodeRequirement) {
-        self.postalCodeRequirement = postalCodeRequirement
-        super.init()
-    }
 
     private func updateValidationState() {
+        guard let inputValue = inputValue,
+            !inputValue.isEmpty
+        else {
+            validationState = .incomplete(description: nil)
+            return
+        }
 
         switch STPPostalCodeValidator.validationState(
-            forPostalCode: inputValue,
-            countryCode: countryCode,
-            with: postalCodeRequirement)
+            forPostalCode: inputValue, countryCode: countryCode)
         {
         case .valid:
             validationState = .valid(message: nil)
@@ -58,11 +53,15 @@ class STPPostalCodeInputTextFieldValidator: STPInputTextFieldValidator {
             validationState = .invalid(errorMessage: defaultErrorMessage)
         case .incomplete:
             var incompleteDescription: String? = nil
-            if let inputValue = inputValue, !inputValue.isEmpty {
+            if !inputValue.isEmpty {
                 if countryCode?.uppercased() == "US" {
-                    incompleteDescription = String.Localized.your_zip_is_incomplete
+                    incompleteDescription = STPLocalizedString(
+                        "Your ZIP is incomplete.",
+                        "Error message for when ZIP code in form is incomplete (US only)")
                 } else {
-                    incompleteDescription = String.Localized.your_postal_code_is_incomplete
+                    incompleteDescription = STPLocalizedString(
+                        "Your postal code is incomplete.",
+                        "Error message for when postal code in form is incomplete")
                 }
             }
             validationState = .incomplete(description: incompleteDescription)

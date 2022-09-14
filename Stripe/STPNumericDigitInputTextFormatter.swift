@@ -7,7 +7,6 @@
 //
 
 import UIKit
-@_spi(STP) import StripeCore
 
 class STPNumericDigitInputTextFormatter: STPInputTextFieldFormatter {
     let allowedFormattingCharacterSet: CharacterSet?

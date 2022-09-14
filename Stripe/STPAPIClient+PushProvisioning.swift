@@ -10,6 +10,7 @@ import Foundation
 
 typealias STPPushProvisioningDetailsCompletionBlock = (STPPushProvisioningDetails?, Error?) -> Void
 extension STPAPIClient {
+    @objc(retrievePushProvisioningDetailsWithParams:ephemeralKey:completion:)
     func retrievePushProvisioningDetails(
         with params: STPPushProvisioningDetailsParams,
         ephemeralKey: STPEphemeralKey,

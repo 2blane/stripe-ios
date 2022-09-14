@@ -55,7 +55,7 @@ class STPShippingAddressViewControllerLocalizationTests: FBSnapshotTestCase {
 
         let viewToTest = stp_preparedAndSizedViewForSnapshotTest(from: shippingVC)!
 
-        STPSnapshotVerifyView(viewToTest, identifier: identifier)
+        FBSnapshotVerifyView(viewToTest, identifier: identifier)
 
         STPLocalizationUtils.overrideLanguage(to: nil)
     }

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-@_spi(STP) import StripeCore
 
 /// An `STPCustomer` represents a deserialized Customer object from the Stripe API.
 /// You shouldn't need to instantiate an `STPCustomer` – you should instead use
@@ -22,9 +21,6 @@ public class STPCustomer: NSObject {
 
     /// The available payment sources the customer has (this may be an empty array).
     @objc public private(set) var sources: [STPSourceProtocol]
-    
-    /// The customer’s email address.
-    @objc public private(set) var email: String?
 
     /// The customer's shipping address.
     @objc public var shippingAddress: STPAddress?
@@ -48,7 +44,6 @@ public class STPCustomer: NSObject {
             defaultSource: defaultSource,
             sources: sources,
             shippingAddress: nil,
-            email: nil,
             allResponseFields: [:])
     }
 
@@ -57,14 +52,12 @@ public class STPCustomer: NSObject {
         defaultSource: STPSourceProtocol?,
         sources: [STPSourceProtocol],
         shippingAddress: STPAddress?,
-        email: String?,
         allResponseFields: [AnyHashable: Any]
     ) {
         self.stripeID = stripeID
         self.defaultSource = defaultSource
         self.sources = sources
         self.shippingAddress = shippingAddress
-        self.email = email
         self.allResponseFields = allResponseFields
         super.init()
     }
@@ -75,7 +68,6 @@ public class STPCustomer: NSObject {
             defaultSource: nil,
             sources: [],
             shippingAddress: nil,
-            email: nil,
             allResponseFields: [:])
     }
 
@@ -139,7 +131,6 @@ extension STPCustomer: STPAPIResponseDecodable {
             defaultSource: defaultSource,
             sources: sources,
             shippingAddress: shippingAddress,
-            email: dict["email"] as? String,
             allResponseFields: dict) as? Self
 
     }

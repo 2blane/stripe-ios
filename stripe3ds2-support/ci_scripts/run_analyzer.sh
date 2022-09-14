@@ -14,7 +14,6 @@ xcodebuild clean analyze \
   -scheme "Stripe3DS2" \
   -configuration "Debug" \
   -sdk "iphonesimulator" \
-  -destination 'generic/platform=iOS Simulator' \
   ONLY_ACTIVE_ARCH=NO \
   OTHER_LDFLAGS="\$(inherited) -Wl,-no_compact_unwind" \
   | tee "${log_file}"

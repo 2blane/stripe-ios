@@ -24,14 +24,14 @@ class STPPaymentCardTextFieldViewModel: NSObject {
         }
         set(cardNumber) {
             let sanitizedNumber = STPCardValidator.sanitizedNumericString(for: cardNumber ?? "")
-            hasCompleteMetadataForCardNumber = STPBINController.shared.hasBINRanges(forPrefix: sanitizedNumber)
+            hasCompleteMetadataForCardNumber = STPBINRange.hasBINRanges(forPrefix: sanitizedNumber)
             if hasCompleteMetadataForCardNumber {
                 let brand = STPCardValidator.brand(forNumber: sanitizedNumber)
                 let maxLength = STPCardValidator.maxLength(for: brand)
                 _cardNumber = sanitizedNumber.stp_safeSubstring(to: maxLength)
             } else {
                 _cardNumber = sanitizedNumber.stp_safeSubstring(
-                    to: Int(STPBINController.shared.maxCardNumberLength()))
+                    to: Int(STPBINRange.maxCardNumberLength()))
             }
         }
     }
@@ -116,7 +116,7 @@ class STPPaymentCardTextFieldViewModel: NSObject {
     @objc dynamic private(set) var hasCompleteMetadataForCardNumber = false
 
     var isNumberMaxLength: Bool {
-        return (cardNumber?.count ?? 0) == STPBINController.shared.maxCardNumberLength()
+        return (cardNumber?.count ?? 0) == STPBINRange.maxCardNumberLength()
     }
 
     func defaultPlaceholder() -> String {
@@ -177,8 +177,8 @@ class STPPaymentCardTextFieldViewModel: NSObject {
     }
 
     func validationStateForCardNumber(handler: @escaping (STPCardValidationState) -> Void) {
-        STPBINController.shared.retrieveBINRanges(forPrefix: cardNumber ?? "") { _ in
-            self.hasCompleteMetadataForCardNumber = STPBINController.shared.hasBINRanges(
+        STPBINRange.retrieveBINRanges(forPrefix: cardNumber ?? "") { _, _ in
+            self.hasCompleteMetadataForCardNumber = STPBINRange.hasBINRanges(
                 forPrefix: self.cardNumber ?? "")
             handler(
                 STPCardValidator.validationState(

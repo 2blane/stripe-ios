@@ -35,7 +35,7 @@ class AfterpayPriceBreakdownViewSnapshotTests: FBSnapshotTestCase {
             let priceBreakdownView = AfterpayPriceBreakdownView(amount: 1000, currency: "GBP")
             let containingView = embedInRenderableView(priceBreakdownView, width: 320, height: 50)
             
-            STPSnapshotVerifyView(containingView)
+            FBSnapshotVerifyView(containingView)
         }
     }
     
@@ -43,6 +43,6 @@ class AfterpayPriceBreakdownViewSnapshotTests: FBSnapshotTestCase {
         let priceBreakdownView = AfterpayPriceBreakdownView(amount: 1000, currency: "USD")
         let containingView = embedInRenderableView(priceBreakdownView, width: 500, height: 30)
         
-        STPSnapshotVerifyView(containingView)
+        FBSnapshotVerifyView(containingView)
     }
 }

@@ -5,7 +5,6 @@
 //  Created by Yuki Tokuhiro on 3/6/19.
 //  Copyright © 2019 Stripe, Inc. All rights reserved.
 //
-import StripeCoreTestUtils
 @testable import Stripe
 
 private let kCardPaymentIntentClientSecret =
@@ -90,8 +89,6 @@ class STPPaymentMethodCardTest: XCTestCase {
 
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "amex"), .amex)
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "AMEX"), .amex)
-        XCTAssertEqual(STPPaymentMethodCard.brand(from: "american_express"), .amex)
-        XCTAssertEqual(STPPaymentMethodCard.brand(from: "AMERICAN_EXPRESS"), .amex)
 
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "mastercard"), .mastercard)
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "MASTERCARD"), .mastercard)
@@ -104,8 +101,6 @@ class STPPaymentMethodCardTest: XCTestCase {
 
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "diners"), .dinersClub)
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "DINERS"), .dinersClub)
-        XCTAssertEqual(STPPaymentMethodCard.brand(from: "diners_club"), .dinersClub)
-        XCTAssertEqual(STPPaymentMethodCard.brand(from: "DINERS_CLUB"), .dinersClub)
 
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "unionpay"), .unionPay)
         XCTAssertEqual(STPPaymentMethodCard.brand(from: "UNIONPAY"), .unionPay)

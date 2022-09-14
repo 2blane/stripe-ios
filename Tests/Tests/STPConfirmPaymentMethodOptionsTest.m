@@ -27,12 +27,7 @@
 
 - (void)testFormEncoding {
     NSDictionary *propertyToFieldMap = [STPConfirmPaymentMethodOptions propertyNamesToFormFieldNamesMapping];
-    NSDictionary *expected = @{@"cardOptions": @"card",
-                               @"alipayOptions": @"alipay",
-                               @"blikOptions": @"blik",
-                               @"weChatPayOptions": @"wechat_pay",
-                               @"usBankAccountOptions": @"us_bank_account",
-    };
+    NSDictionary *expected = @{@"cardOptions": @"card", @"alipayOptions": @"alipay", @"blikOptions": @"blik", @"weChatPayOptions": @"wechat_pay"};
 
     XCTAssertEqualObjects(propertyToFieldMap, expected, @"Unexpected property to field name mapping.");
 }

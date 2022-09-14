@@ -10,7 +10,7 @@
 #import <OCMock/OCMock.h>
 
 
-@import StripeCore;
+
 
 
 
@@ -71,14 +71,13 @@
 }
 
 - (void)testApplePayEnabledMisisngDeviceSupport {
-    id paymentAuthControllerMock = OCMClassMock([PKPaymentAuthorizationController class]);
-    OCMStub([paymentAuthControllerMock canMakePaymentsUsingNetworks:[OCMArg any]]).andReturn(NO);
-    
+    id stripeMock = OCMClassMock([StripeAPI class]);
+    OCMStub([stripeMock deviceSupportsApplePay]).andReturn(NO);
+
     STPPaymentConfiguration *paymentConfiguration = [[STPPaymentConfiguration alloc] init];
     paymentConfiguration.appleMerchantIdentifier = @"appleMerchantIdentifier";
 
     XCTAssertFalse([paymentConfiguration applePayEnabled]);
-    [paymentAuthControllerMock stopMocking];
 }
 
 #pragma mark - Description

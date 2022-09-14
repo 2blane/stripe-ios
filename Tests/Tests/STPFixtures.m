@@ -33,7 +33,6 @@ NSString *const STPTestJSONSourceSEPADebit = @"SEPADebitSource";
 NSString *const STPTestJSONSourceSofort = @"SofortSource";
 NSString *const STPTestJSONSourceWeChatPay = @"WeChatPaySource";
 
-@import StripeCore;
 
 @implementation STPFixtures
 
@@ -113,10 +112,6 @@ NSString *const STPTestJSONSourceWeChatPay = @"WeChatPaySource";
 }
 
 + (STPCustomer *)customerWithSingleCardTokenSource {
-    return [STPCustomer decodedObjectFromAPIResponse:[self customerWithSingleCardTokenSourceJSON]];
-}
-
-+ (NSDictionary *)customerWithSingleCardTokenSourceJSON {
     NSMutableDictionary *card1 = [[STPTestUtils jsonNamed:STPTestJSONCard] mutableCopy];
     card1[@"id"] = @"card_123";
 
@@ -126,7 +121,7 @@ NSString *const STPTestJSONSourceWeChatPay = @"WeChatPaySource";
     customer[@"default_source"] = card1[@"id"];
     customer[@"sources"] = sources;
 
-    return customer;
+    return [STPCustomer decodedObjectFromAPIResponse:customer];
 }
 
 + (STPCustomer *)customerWithSingleCardSourceSource {
@@ -160,10 +155,6 @@ NSString *const STPTestJSONSourceWeChatPay = @"WeChatPaySource";
 }
 
 + (STPCustomer *)customerWithCardAndApplePaySources {
-    return [STPCustomer decodedObjectFromAPIResponse:[self customerWithCardAndApplePaySourcesJSON]];
-}
-
-+ (NSDictionary *)customerWithCardAndApplePaySourcesJSON {
     NSMutableDictionary *card1 = [[STPTestUtils jsonNamed:STPTestJSONSourceCard] mutableCopy];
     card1[@"id"] = @"src_apple_pay_123";
     NSMutableDictionary *cardDict = [card1[@"card"] mutableCopy];
@@ -179,7 +170,7 @@ NSString *const STPTestJSONSourceWeChatPay = @"WeChatPaySource";
     customer[@"default_source"] = card1[@"id"];
     customer[@"sources"] = sources;
 
-    return customer;
+    return [STPCustomer decodedObjectFromAPIResponse:customer];
 }
 
 + (STPCustomer *)customerWithSourcesFromJSONKeys:(NSArray<NSString *> *)jsonSourceKeys
@@ -331,18 +322,11 @@ NSString *const STPTestJSONSourceWeChatPay = @"WeChatPaySource";
 #pragma mark - Payment Method
 
 + (STPPaymentMethod *)paymentMethod {
-    return [STPPaymentMethod decodedObjectFromAPIResponse:[self paymentMethodJSON]];
-}
-
-+ (NSDictionary *)paymentMethodJSON {
-    return [STPTestUtils jsonNamed:STPTestJSONPaymentMethodCard];
+    return [STPPaymentMethod decodedObjectFromAPIResponse:[STPTestUtils jsonNamed:STPTestJSONPaymentMethodCard]];
 }
 
 + (STPPaymentMethod *)applePayPaymentMethod {
-    return [STPPaymentMethod decodedObjectFromAPIResponse:[self applePayPaymentMethodJSON]];
+    return [STPPaymentMethod decodedObjectFromAPIResponse:[STPTestUtils jsonNamed:STPTestJSONPaymentMethodApplePay]];
 }
 
-+ (NSDictionary *)applePayPaymentMethodJSON {
-    return [STPTestUtils jsonNamed:STPTestJSONPaymentMethodApplePay];
-}
 @end

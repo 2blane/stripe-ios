@@ -17,7 +17,7 @@ import UIKit
 /// Note: It's important to configure this object appropriately before calling any `STPPaymentHandler` APIs.
 /// The API makes a copy of the customization settings you provide; it ignores any subsequent changes you
 /// make to your `STPThreeDSUICustomization` instance.
-/// - seealso: https://stripe.com/docs/payments/3d-secure
+/// - seealso: https://stripe.com/docs/mobile/ios/authentication
 public class STPThreeDSUICustomization: NSObject {
     /// The default settings.  See individual properties for their default values.
     @objc

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-@_spi(STP) import StripeCore
 
 class STPCardNumberInputTextFieldFormatter: STPNumericDigitInputTextFormatter {
 
@@ -24,9 +23,9 @@ class STPCardNumberInputTextFieldFormatter: STPNumericDigitInputTextFormatter {
         let proposed = string.replacingCharacters(in: range, with: input)
         let unformattedProposed = STPNumericStringValidator.sanitizedNumericString(for: proposed)
 
-        var maxLength = STPBINController.shared.maxCardNumberLength()
+        var maxLength = STPBINRange.maxCardNumberLength()
 
-        let hasCompleteMetadataForCardNumber = STPBINController.shared.hasBINRanges(
+        let hasCompleteMetadataForCardNumber = STPBINRange.hasBINRanges(
             forPrefix: unformattedProposed)
         if hasCompleteMetadataForCardNumber {
             let brand = STPCardValidator.brand(forNumber: unformattedProposed)

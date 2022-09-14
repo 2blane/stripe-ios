@@ -37,10 +37,11 @@ extension IdentityVerificationSheetError: CustomDebugStringConvertible {
     }
 }
 
-/// :nodoc:
-@_spi(STP) extension IdentityVerificationSheetError: AnalyticLoggableError {
-    
-    /// The error code
+// TODO(mludowise|MOBILESDK-193): Added `CustomNSError` conformance so our
+// analytics will be able to log useful information until we find a better solution.
+extension IdentityVerificationSheetError: CustomNSError {
+    public static let errorDomain = "Stripe.\(IdentityVerificationSheetError.self)"
+
     public var errorCode: Int {
         switch self {
         case .invalidClientSecret:
@@ -49,13 +50,11 @@ extension IdentityVerificationSheetError: CustomDebugStringConvertible {
             return 1
         }
     }
-    
-    /// Serializes this error
-    /// - Returns: an error with a domain and code
-    public func analyticLoggableSerializeForLogging() -> [String : Any] {
+
+    public var errorUserInfo: [String : Any] {
         return [
-            "domain": (self as NSError).domain,
-            "code": errorCode
+            NSDebugDescriptionErrorKey: debugDescription,
+            NSLocalizedDescriptionKey: localizedDescription
         ]
     }
 }

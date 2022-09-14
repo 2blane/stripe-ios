@@ -7,8 +7,6 @@
 //
 
 import UIKit
-@_spi(STP) import StripeCore
-@_spi(STP) import StripeUICore
 
 class STPPostalCodeInputTextField: STPInputTextField {
 
@@ -18,7 +16,6 @@ class STPPostalCodeInputTextField: STPInputTextField {
             updateKeyboard()
             (formatter as! STPPostalCodeInputTextFieldFormatter).countryCode = countryCode
             (validator as! STPPostalCodeInputTextFieldValidator).countryCode = countryCode
-            clearIfInvalid()
         }
     }
 
@@ -26,10 +23,10 @@ class STPPostalCodeInputTextField: STPInputTextField {
         return validator.inputValue
     }
 
-    public convenience init(postalCodeRequirement: STPPostalCodeRequirement) {
+    public convenience init() {
         self.init(
             formatter: STPPostalCodeInputTextFieldFormatter(),
-            validator: STPPostalCodeInputTextFieldValidator(postalCodeRequirement: postalCodeRequirement))
+            validator: STPPostalCodeInputTextFieldValidator())
     }
 
     required init(formatter: STPInputTextFieldFormatter, validator: STPInputTextFieldValidator) {
@@ -46,7 +43,6 @@ class STPPostalCodeInputTextField: STPInputTextField {
 
     override func setupSubviews() {
         super.setupSubviews()
-        accessibilityIdentifier = "Postal Code"
         updatePlaceholder()
     }
 
@@ -56,7 +52,7 @@ class STPPostalCodeInputTextField: STPInputTextField {
             return
         }
         if countryCode == "US" {
-            placeholder = String.Localized.zip
+            placeholder = STPLocalizedString("ZIP", "Zip code placeholder US only")
         } else {
             placeholder = STPLocalizedString("Postal Code", "Postal code placeholder")
         }
@@ -71,9 +67,4 @@ class STPPostalCodeInputTextField: STPInputTextField {
         }
     }
 
-    private func clearIfInvalid() {
-        if case .invalid = validator.validationState {
-            self.text = ""
-        }
-    }
 }

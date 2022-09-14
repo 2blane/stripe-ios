@@ -10,14 +10,15 @@
 
 class STPBinRangeTest: XCTestCase {
     func testAllRanges() {
-        for binRange in STPBINController.shared.allRanges() {
-            XCTAssertEqual(binRange.accountRangeLow.count, binRange.accountRangeHigh.count)
+        for binRange in STPBINRange.allRanges() {
+            XCTAssertEqual(binRange.qRangeLow.count, binRange.qRangeHigh.count)
         }
     }
 
     func testMatchesNumber() {
         var binRange = STPBINRange(
-            panLength: 0, brand: .unknown, accountRangeLow: "134", accountRangeHigh: "167", country: nil)
+            length: 0, brand: .unknown, qRangeLow: "134", qRangeHigh: "167", country: nil,
+            isCardMetadata: false)
 
         XCTAssertFalse(binRange.matchesNumber("0"))
         XCTAssertTrue(binRange.matchesNumber("1"))
@@ -44,7 +45,8 @@ class STPBinRangeTest: XCTestCase {
         XCTAssertFalse(binRange.matchesNumber("1680"))
 
         binRange = STPBINRange(
-            panLength: 0, brand: .unknown, accountRangeLow: "004", accountRangeHigh: "017", country: nil)
+            length: 0, brand: .unknown, qRangeLow: "004", qRangeHigh: "017", country: nil,
+            isCardMetadata: false)
 
         XCTAssertTrue(binRange.matchesNumber("0"))
         XCTAssertFalse(binRange.matchesNumber("1"))
@@ -75,7 +77,8 @@ class STPBinRangeTest: XCTestCase {
         XCTAssertFalse(binRange.matchesNumber("1004"))
 
         binRange = STPBINRange(
-            panLength: 0, brand: .unknown, accountRangeLow: "", accountRangeHigh: "", country: nil)
+            length: 0, brand: .unknown, qRangeLow: "", qRangeHigh: "", country: nil,
+            isCardMetadata: false)
         XCTAssertTrue(binRange.matchesNumber(""))
         XCTAssertTrue(binRange.matchesNumber("1"))
     }
@@ -83,19 +86,19 @@ class STPBinRangeTest: XCTestCase {
     func testBinRangesForNumber() {
         var binRanges: [STPBINRange]?
 
-        binRanges = STPBINController.shared.binRanges(forNumber: "4136000000008")
+        binRanges = STPBINRange.binRanges(forNumber: "4136000000008")
         XCTAssertEqual(binRanges?.count, 3)
 
-        binRanges = STPBINController.shared.binRanges(forNumber: "4242424242424242")
+        binRanges = STPBINRange.binRanges(forNumber: "4242424242424242")
         XCTAssertEqual(binRanges?.count, 2)
 
-        binRanges = STPBINController.shared.binRanges(forNumber: "5555555555554444")
+        binRanges = STPBINRange.binRanges(forNumber: "5555555555554444")
         XCTAssertEqual(binRanges?.count, 2)
 
-        binRanges = STPBINController.shared.binRanges(forNumber: "")
-        XCTAssertEqual(binRanges?.count, STPBINController.shared.allRanges().count)
+        binRanges = STPBINRange.binRanges(forNumber: "")
+        XCTAssertEqual(binRanges?.count, STPBINRange.allRanges().count)
 
-        binRanges = STPBINController.shared.binRanges(forNumber: "123")
+        binRanges = STPBINRange.binRanges(forNumber: "123")
         XCTAssertEqual(binRanges?.count, 1)
     }
 
@@ -111,7 +114,7 @@ class STPBinRangeTest: XCTestCase {
             .unknown,
         ]
         for brand in allBrands {
-            let binRanges = STPBINController.shared.binRanges(for: brand)
+            let binRanges = STPBINRange.binRanges(for: brand)
             for binRange in binRanges {
                 XCTAssertEqual(binRange.brand, brand)
             }
@@ -121,19 +124,19 @@ class STPBinRangeTest: XCTestCase {
     func testMostSpecificBinRangeForNumber() {
         var binRange: STPBINRange?
 
-        binRange = STPBINController.shared.mostSpecificBINRange(forNumber: "")
+        binRange = STPBINRange.mostSpecificBINRange(forNumber: "")
         XCTAssertNotEqual(binRange?.brand, .unknown)
 
-        binRange = STPBINController.shared.mostSpecificBINRange(forNumber: "4242424242422")
+        binRange = STPBINRange.mostSpecificBINRange(forNumber: "4242424242422")
         XCTAssertEqual(binRange?.brand, .visa)
-        XCTAssertEqual(binRange?.panLength, 16)
+        XCTAssertEqual(binRange?.length, 16)
 
-        binRange = STPBINController.shared.mostSpecificBINRange(forNumber: "4136000000008")
+        binRange = STPBINRange.mostSpecificBINRange(forNumber: "4136000000008")
         XCTAssertEqual(binRange?.brand, .visa)
-        XCTAssertEqual(binRange?.panLength, 13)
+        XCTAssertEqual(binRange?.length, 13)
 
-        binRange = STPBINController.shared.mostSpecificBINRange(forNumber: "4242424242424242")
+        binRange = STPBINRange.mostSpecificBINRange(forNumber: "4242424242424242")
         XCTAssertEqual(binRange?.brand, .visa)
-        XCTAssertEqual(binRange?.panLength, 16)
+        XCTAssertEqual(binRange?.length, 16)
     }
 }

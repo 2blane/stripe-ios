@@ -22,8 +22,9 @@ class ExampleCustomCheckoutViewController: UIViewController {
 
         buyButton.addTarget(self, action: #selector(didTapCheckoutButton), for: .touchUpInside)
         buyButton.isEnabled = false
-        
-        paymentMethodButton.addTarget(self, action: #selector(didTapPaymentMethodButton), for: .touchUpInside)
+
+        paymentMethodButton.addTarget(
+            self, action: #selector(didTapPaymentMethodButton), for: .touchUpInside)
         paymentMethodButton.isEnabled = false
 
         // MARK: Fetch the PaymentIntent and Customer information from the backend
@@ -55,8 +56,6 @@ class ExampleCustomCheckoutViewController: UIViewController {
                 configuration.customer = .init(
                     id: customerId, ephemeralKeySecret: customerEphemeralKeySecret)
                 configuration.returnURL = "payments-example://stripe-redirect"
-                // Set allowsDelayedPaymentMethods to true if your business can handle payment methods that complete payment after a delay, like SEPA Debit and Sofort.
-                configuration.allowsDelayedPaymentMethods = true
                 PaymentSheet.FlowController.create(
                     paymentIntentClientSecret: paymentIntentClientSecret,
                     configuration: configuration

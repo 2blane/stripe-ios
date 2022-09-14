@@ -1,3 +1,4 @@
+// Source: https://stripe.com/docs/api/curl#bank_accounts
 {
     "id": "ba_1AZmya2eZvKYlo2CQzt7Fwnz",
     "object": "bank_account",

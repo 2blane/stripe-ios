@@ -7,7 +7,6 @@
 //
 
 import UIKit
-@_spi(STP) import StripeUICore
 
 class STPCardCVCInputTextField: STPInputTextField {
 
@@ -16,7 +15,6 @@ class STPCardCVCInputTextField: STPInputTextField {
             cvcFormatter.cardBrand = cardBrand
             cvcValidator.cardBrand = cardBrand
             updateCVCImageAndPlaceholder()
-            truncateTextIfNeeded()
         }
     }
 
@@ -28,17 +26,12 @@ class STPCardCVCInputTextField: STPInputTextField {
         return validator as! STPCardCVCInputTextFieldValidator
     }
 
-    let cvcHintView = CardBrandView(showCVC: true)
+    let cvcImageView = UIImageView()
 
-    public convenience init(prefillDetails: STPCardFormView.PrefillDetails? = nil) {
+    public convenience init() {
         self.init(
             formatter: STPCardCVCInputTextFieldFormatter(),
             validator: STPCardCVCInputTextFieldValidator())
-        
-        // set card brand in a defer to ensure didSet is called updating the formatter & validator
-        defer {
-            self.cardBrand = prefillDetails?.cardBrand ?? .unknown
-        }
     }
 
     required init(formatter: STPInputTextFieldFormatter, validator: STPInputTextFieldValidator) {
@@ -54,14 +47,13 @@ class STPCardCVCInputTextField: STPInputTextField {
 
     override func setupSubviews() {
         super.setupSubviews()
-        accessibilityIdentifier = "CVC"
-        addAccessoryViews([cvcHintView])
+        addAccessoryImageViews([cvcImageView])
         updateCVCImageAndPlaceholder()
     }
 
     func updateCVCImageAndPlaceholder() {
-        cvcHintView.setCardBrand(cardBrand, animated: true)
-
+        cvcImageView.image = STPImageLibrary.safeImageNamed(
+            "card_cvc_icon", templateIfAvailable: false)  // TODO : This doesn't have special image for amex
         if cardBrand == .amex {
             placeholder = STPLocalizedString("CVV", "Label for entering CVV in text field")
         } else {
@@ -69,14 +61,9 @@ class STPCardCVCInputTextField: STPInputTextField {
         }
     }
 
-    func truncateTextIfNeeded() {
-        guard let text = self.text else {
-            return
-        }
-
-        let maxLength = Int(STPCardValidator.maxCVCLength(for: cardBrand))
-        if text.count > maxLength {
-            self.text = text.stp_safeSubstring(to: maxLength)
-        }
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        // Workaround until we can use image assets
+        cvcImageView.image = STPImageLibrary.safeImageNamed(
+            "card_cvc_icon", templateIfAvailable: false)  // TODO : This doesn't have special image for amex
     }
 }

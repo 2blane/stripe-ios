@@ -8,7 +8,6 @@
 
 import XCTest
 @testable import Stripe
-@testable @_spi(STP) import StripeApplePay
 
 class STPRadarSessionFunctionalTest: XCTestCase {
     func testCreateWithoutInitialFraudDetection() {

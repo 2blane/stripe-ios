@@ -14,7 +14,6 @@ xcodebuild clean analyze \
   -scheme "StripeiOS" \
   -configuration "Debug" \
   -sdk "iphonesimulator" \
-  -destination 'generic/platform=iOS Simulator' \
   ONLY_ACTIVE_ARCH=NO \
   OTHER_LDFLAGS="\$(inherited) -Wl,-no_compact_unwind" \
   | tee "${log_file}"

@@ -12,19 +12,17 @@ import Stripe
 @available(iOS 13.0.0, *)
 struct SwiftUICardFormView: View {
     
-    @State private var paymentMethodParams: STPPaymentMethodParams = STPPaymentMethodParams()
-    @State private var cardFormIsComplete: Bool = false
+    @State var paymentMethodParams: STPPaymentMethodParams?
     
     var body: some View {
         VStack {
-            STPCardFormView.Representable(paymentMethodParams: $paymentMethodParams,
-                                          isComplete: $cardFormIsComplete)
+            STPCardFormView.Representable(paymentMethodParams: $paymentMethodParams)
                 .padding()
             Button(action: {
                 print("Process payment...")
             }, label: {
                 Text("Buy")
-            }).disabled(!cardFormIsComplete)
+            }).disabled(paymentMethodParams == nil)
             .padding()
         }
     }

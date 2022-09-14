@@ -7,7 +7,6 @@
 //
 
 import Foundation
-@_spi(STP) import StripeCore
 
 class STPBECSDebitAccountNumberValidator: STPNumericStringValidator {
     class func validationState(

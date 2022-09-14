@@ -8,8 +8,6 @@
 
 import Foundation
 import UIKit
-@_spi(STP) import StripeCore
-@_spi(STP) import StripeUICore
 
 class STPBSBNumberValidator: STPNumericStringValidator {
     class func validationState(forText text: String) -> STPTextValidationState {
@@ -49,8 +47,7 @@ class STPBSBNumberValidator: STPNumericStringValidator {
 
         let iconName = self._data(forText: text ?? "")?["icon"] as? String
         if let iconName = iconName {
-            return StripeUICore.Image.brandImage(named: iconName)?.makeImage() ??
-            STPImageLibrary.safeImageNamed(iconName, templateIfAvailable: false)
+            return STPImageLibrary.safeImageNamed(iconName, templateIfAvailable: false)
         } else {
             return STPImageLibrary.safeImageNamed("stp_icon_bank", templateIfAvailable: false)
         }
@@ -133,4 +130,4 @@ class STPBSBNumberValidator: STPNumericStringValidator {
 }
 
 private let kBSBNumberLength = Int(6)
-private let kBSBNumberDashIndex = Int(3)
+private let kBSBNumberDashIndex = String.IndexDistance(3)

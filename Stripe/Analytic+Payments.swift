@@ -8,31 +8,17 @@
 
 import Foundation
 @_spi(STP) import StripeCore
-@_spi(STP) import StripeApplePay
 
 /**
- A generic analytic type.
- - NOTE: This should only be used to support legacy analytics.
- Any new analytic events should create a new type and conform to `PaymentAnalytic`.
+ An analytic specific to payments that serializes a payment configuration into its params.
  */
-struct GenericPaymentAnalytic: PaymentAnalytic {
-    let event: STPAnalyticEvent
-    let paymentConfiguration: STPPaymentConfiguration?
-    let productUsage: Set<String>
-    let additionalParams: [String : Any]
+protocol PaymentAnalytic: Analytic {
+    var paymentConfiguration: STPPaymentConfiguration? { get }
+    var productUsage: Set<String> { get }
+    var additionalParams: [String: Any] { get }
 }
 
-/// Represents a generic payment error analytic
-struct GenericPaymentErrorAnalytic: PaymentAnalytic, ErrorAnalytic {
-    let event: STPAnalyticEvent
-    let paymentConfiguration: STPPaymentConfiguration?
-    let productUsage: Set<String>
-    let additionalParams: [String : Any]
-    let error: Error
-}
-
-
-extension GenericPaymentAnalytic {
+extension PaymentAnalytic {
     var params: [String: Any] {
         var params = additionalParams
 
@@ -44,7 +30,18 @@ extension GenericPaymentAnalytic {
         params["ui_usage_level"] = STPAnalyticsClient.uiUsageLevelString(from: productUsage)
         params["apple_pay_enabled"] = NSNumber(value: StripeAPI.deviceSupportsApplePay())
         params["ocr_type"] = STPAnalyticsClient.ocrTypeString()
-        params["pay_var"] = STPAnalyticsClient.paymentsSDKVariant
         return params
     }
+}
+
+/**
+ A generic analytic type.
+ - NOTE: This should only be used to support legacy analytics.
+ Any new analytic events should create a new type and conform to `PaymentAnalytic`.
+ */
+struct GenericPaymentAnalytic: PaymentAnalytic {
+    let event: STPAnalyticEvent
+    let paymentConfiguration: STPPaymentConfiguration?
+    let productUsage: Set<String>
+    let additionalParams: [String : Any]
 }

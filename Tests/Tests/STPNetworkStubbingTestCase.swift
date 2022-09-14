@@ -19,10 +19,7 @@ class STPNetworkStubbingTestCase: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        
-        // Set the STPTestingAPIClient to use the sharedURLSessionConfig so that we can intercept requests from it too
-        STPTestingAPIClient.shared().sessionConfig = StripeAPIConfiguration.sharedUrlSessionConfiguration
-        
+
         // [self name] returns a string like `-[STPMyTestCase testThing]` - this transforms it into the recorded path `recorded_network_traffic/STPMyTestCase/testThing`.
         let rawComponents = name.components(separatedBy: " ")
         assert(rawComponents.count == 2, "Invalid format received from XCTest#name: \(name)")
@@ -55,7 +52,7 @@ class STPNetworkStubbingTestCase: XCTestCase {
                 let method = request!.httpMethod?.lowercased()
                 let urlPath = request!.url?.path.replacingOccurrences(of: "/", with: "_")
                 var fileName = "\(method ?? "")\(urlPath ?? "")_\(count)"
-                fileName = URL(fileURLWithPath: fileName).appendingPathExtension("tail").lastPathComponent
+                fileName = URL(fileURLWithPath: fileName).appendingPathExtension("tail").path
                 count += 1
                 return fileName
             }
@@ -127,5 +124,3 @@ class STPNetworkStubbingTestCase: XCTestCase {
         HTTPStubs.removeAllStubs()
     }
 }
-
-

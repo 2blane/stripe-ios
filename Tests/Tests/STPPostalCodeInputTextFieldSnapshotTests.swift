@@ -18,48 +18,48 @@ class STPPostalCodeInputTextFieldSnapshotTests: FBSnapshotTestCase {
     }
 
     func testEmpty() {
-        let field = STPPostalCodeInputTextField(postalCodeRequirement: .standard)
+        let field = STPPostalCodeInputTextField()
         field.sizeToFit()
         field.frame.size.width = 200
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testIncomplete() {
-        let field = STPPostalCodeInputTextField(postalCodeRequirement: .standard)
+        let field = STPPostalCodeInputTextField()
         field.sizeToFit()
         field.frame.size.width = 200
         field.countryCode = "US"
         field.text = "1"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testValidUS() {
-        let field = STPPostalCodeInputTextField(postalCodeRequirement: .standard)
+        let field = STPPostalCodeInputTextField()
         field.sizeToFit()
         field.frame.size.width = 200
         field.countryCode = "US"
         field.text = "12345"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testValidUK() {
-        let field = STPPostalCodeInputTextField(postalCodeRequirement: .standard)
+        let field = STPPostalCodeInputTextField()
         field.sizeToFit()
         field.frame.size.width = 200
         field.countryCode = "UK"
         field.text = "abcdef"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testInvalid() {
-        let field = STPPostalCodeInputTextField(postalCodeRequirement: .standard)
+        let field = STPPostalCodeInputTextField()
         field.sizeToFit()
         field.frame.size.width = 200
         field.countryCode = "US"
@@ -67,6 +67,6 @@ class STPPostalCodeInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.textDidChange()
         field.validator.validationState = .invalid(errorMessage: nil) // manually set because the formatter prevents setting invalid text
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 }

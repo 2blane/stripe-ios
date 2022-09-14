@@ -22,7 +22,7 @@ class STPCardExpiryInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.sizeToFit()
         field.frame.size.width = 200
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testIncomplete() {
@@ -32,7 +32,7 @@ class STPCardExpiryInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.text = "1"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     // We can't have a valid test here because the date would have to change as time marches on
@@ -46,7 +46,7 @@ class STPCardExpiryInputTextFieldSnapshotTests: FBSnapshotTestCase {
         field.text = "16/22"
         field.textDidChange()
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
 }

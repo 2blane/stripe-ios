@@ -13,7 +13,7 @@ import XCTest
 class STPPostalCodeInputTextFieldValidatorTests: XCTestCase {
 
     func testValidation() {
-        let validator = STPPostalCodeInputTextFieldValidator(postalCodeRequirement: .standard)
+        let validator = STPPostalCodeInputTextFieldValidator()
         validator.countryCode = "US"
 
         validator.inputValue = nil

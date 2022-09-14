@@ -7,7 +7,6 @@
 //
 
 import UIKit
-@_spi(STP) import StripeCore
 
 class STPCardExpiryInputTextFieldValidator: STPInputTextFieldValidator {
 
@@ -23,16 +22,8 @@ class STPCardExpiryInputTextFieldValidator: STPInputTextFieldValidator {
         }
         let numericInput = STPNumericStringValidator.sanitizedNumericString(for: inputValue)
         let monthString = numericInput.stp_safeSubstring(to: 2)
-        var yearString = numericInput.stp_safeSubstring(from: 2)
-        
-        // prepend "20" to ensure we provide a 4 digit year, this is to be consistent with Checkout
-        if yearString.count == 2 {
-            let centuryLeadingDigits = Int(floor(Double(Calendar(identifier: .iso8601).component(.year, from: Date())) / 100))
-                                           
-            yearString = "\(centuryLeadingDigits)\(yearString)"
-        }
-        
-        if monthString.count == 2 && yearString.count == 4 {
+        let yearString = numericInput.stp_safeSubstring(from: 2)
+        if monthString.count == 2 && yearString.count == 2 {
             return (month: monthString, year: yearString)
         } else {
             return nil

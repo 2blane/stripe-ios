@@ -8,12 +8,13 @@
 
 #import <FBSnapshotTestCase/FBSnapshotTestCase.h>
 #import <OCMock/OCMock.h>
+@import Stripe;
+@import Stripe;
 #import "StripeiOS_Tests-Swift.h"
 
 #import "FBSnapshotTestCase+STPViewControllerLoading.h"
 #import "STPFixtures.h"
 #import "STPMocks.h"
-#import "STPTestUtils.h"
 
 @interface STPPaymentContextSnapshotTests : FBSnapshotTestCase
 
@@ -62,7 +63,7 @@
         self.paymentContext.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAutomatic;
         [self.paymentContext pushPaymentOptionsViewController];
         UIView *view = [self stp_preparedAndSizedViewForSnapshotTestFromNavigationController:self.hostViewController];
-        STPSnapshotVerifyView(view, nil);
+        FBSnapshotVerifyView(view, nil);
     }
 }
 
@@ -77,7 +78,7 @@
 //        self.paymentContext.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAutomatic;
 //        [self.paymentContext pushPaymentOptionsViewController];
 //        UIView *view = [self stp_preparedAndSizedViewForSnapshotTestFromNavigationController:self.hostViewController];
-//        STPSnapshotVerifyView(view, nil);
+//        FBSnapshotVerifyView(view, nil);
 //    }
 //}
 
@@ -89,7 +90,7 @@
         self.paymentContext.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAutomatic;
         [self.paymentContext pushShippingViewController];
         UIView *view = [self stp_preparedAndSizedViewForSnapshotTestFromNavigationController:self.hostViewController];
-        STPSnapshotVerifyView(view, nil);
+        FBSnapshotVerifyView(view, nil);
     }
 }
 
@@ -104,7 +105,7 @@
 //        self.paymentContext.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAutomatic;
 //        [self.paymentContext pushShippingViewController];
 //        UIView *view = [self stp_preparedAndSizedViewForSnapshotTestFromNavigationController:self.hostViewController];
-//        STPSnapshotVerifyView(view, nil);
+//        FBSnapshotVerifyView(view, nil);
 //    }
 //}
 

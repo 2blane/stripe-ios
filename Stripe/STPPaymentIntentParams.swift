@@ -26,17 +26,6 @@ public class STPPaymentIntentParams: NSObject {
         super.init()
     }
 
-    /// Initializes this `STPPaymentIntentParams` with a `clientSecret` and `paymentMethodType`.
-    /// Use this initializer for PaymentIntents that already have a PaymentMethod attached.
-    /// - Parameter clientSecret: the client secret for this PaymentIntent
-    /// - Parameter paymentMethodType: the known type of the PaymentIntent's attached PaymentMethod
-    @objc
-    public init(clientSecret: String, paymentMethodType: STPPaymentMethodType) {
-        self.clientSecret = clientSecret
-        self._paymentMethodType = paymentMethodType
-        super.init()
-    }
-
     @objc convenience override init() {
         self.init(clientSecret: "")
     }
@@ -108,16 +97,6 @@ public class STPPaymentIntentParams: NSObject {
     /// app.
     @objc public var useStripeSDK: NSNumber?
 
-    internal var _paymentMethodType: STPPaymentMethodType?
-    internal var paymentMethodType: STPPaymentMethodType? {
-        get {
-            if let type = _paymentMethodType {
-                return type
-            }
-            return paymentMethodParams?.type
-        }
-    }
-
     internal var _mandateData: STPMandateDataParams?
     /// Details about the Mandate to create.
     /// @note If this value is null and the (self.paymentMethod.type == STPPaymentMethodTypeSEPADebit | | self.paymentMethodParams.type == STPPaymentMethodTypeAUBECSDebit || self.paymentMethodParams.type == STPPaymentMethodTypeBacsDebit) && self.mandate == nil`, the SDK will set this to an internal value indicating that the mandate data should be inferred from the current context.
@@ -129,8 +108,8 @@ public class STPPaymentIntentParams: NSObject {
             if let _mandateData = _mandateData {
                 return _mandateData
             }
-            switch paymentMethodType {
-            case .AUBECSDebit, .bacsDebit, .bancontact, .iDEAL, .SEPADebit, .EPS, .sofort, .link, .USBankAccount:
+            switch paymentMethodParams?.type {
+            case .AUBECSDebit, .bacsDebit, .bancontact, .iDEAL, .SEPADebit, .EPS, .sofort:
                 // Create default infer from client mandate_data
                 let onlineParams = STPMandateOnlineParams(ipAddress: "", userAgent: "")
                 onlineParams.inferFromClient = NSNumber(value: true)
@@ -279,7 +258,6 @@ extension STPPaymentIntentParams: NSCopying {
         let copy = STPPaymentIntentParams(clientSecret: clientSecret)
 
         copy.paymentMethodParams = paymentMethodParams
-        copy._paymentMethodType = _paymentMethodType
         copy.paymentMethodId = paymentMethodId
         copy.sourceParams = sourceParams
         copy.sourceId = sourceId

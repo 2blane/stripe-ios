@@ -9,7 +9,6 @@
 import Foundation
 
 @testable import Stripe
-@_spi(STP) import StripeCore
 
 class MockCustomer: STPCustomer {
     var mockPaymentMethods: [STPPaymentMethod] = []
@@ -18,7 +17,7 @@ class MockCustomer: STPCustomer {
 
     init() {
         super.init(
-            stripeID: "", defaultSource: nil, sources: [], shippingAddress: nil, email: nil,
+            stripeID: "", defaultSource: nil, sources: [], shippingAddress: nil,
             allResponseFields: [:])
         /**
          Preload the mock customer with saved cards.

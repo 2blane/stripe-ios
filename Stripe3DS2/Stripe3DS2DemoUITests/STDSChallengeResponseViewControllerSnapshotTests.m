@@ -31,7 +31,7 @@
     
     [self waitForChallengeResponseTimer];
     
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"TextChallengeResponse");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"TextChallengeResponse");
 }
 
 - (void)testVerifySingleSelectDesign {
@@ -40,7 +40,7 @@
     
     [self waitForChallengeResponseTimer];
     
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"SingleSelectResponse");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"SingleSelectResponse");
 }
 
 - (void)testVerifyMultiSelectDesign {
@@ -49,7 +49,7 @@
     
     [self waitForChallengeResponseTimer];
     
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"MultiSelectResponse");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"MultiSelectResponse");
 }
 
 - (void)testVerifyOOBDesign {
@@ -58,7 +58,7 @@
     
     [self waitForChallengeResponseTimer];
     
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"OOBResponse");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"OOBResponse");
 }
 
 - (void)testLoadingAmex {
@@ -66,7 +66,7 @@
     [challengeResponseViewController view];
     [challengeResponseViewController setLoading];
 
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"LoadingAmex");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"LoadingAmex");
 }
 
 - (void)testLoadingDiscover {
@@ -74,7 +74,7 @@
     [challengeResponseViewController view];
     [challengeResponseViewController setLoading];
 
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"LoadingDiscover");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"LoadingDiscover");
 }
 
 - (void)testLoadingMastercard {
@@ -82,7 +82,7 @@
     [challengeResponseViewController view];
     [challengeResponseViewController setLoading];
 
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"LoadingMastercard");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"LoadingMastercard");
 }
 
 - (void)testLoadingVisa {
@@ -90,7 +90,7 @@
     [challengeResponseViewController view];
     [challengeResponseViewController setLoading];
 
-    STPSnapshotVerifyView(challengeResponseViewController.view, @"LoadingVisa");
+    FBSnapshotVerifyView(challengeResponseViewController.view, @"LoadingVisa");
 }
 
 - (STDSChallengeResponseViewController *)challengeResponseViewControllerForResponse:(id<STDSChallengeResponse>)response directoryServer:(STDSDirectoryServer)directoryServer {

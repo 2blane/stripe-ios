@@ -215,76 +215,63 @@ extension PaymentSheet.FlowController {
 @available(iOSApplicationExtension, unavailable)
 @available(macCatalystApplicationExtension, unavailable)
 extension PaymentSheet {
-    struct PaymentSheetPresenter: UIViewRepresentable {
+    struct PaymentSheetPresenter: UIViewControllerRepresentable {
         @Binding var presented: Bool
-        weak var paymentSheet: PaymentSheet?
+        let paymentSheet: PaymentSheet
         let onCompletion: (PaymentSheetResult) -> Void
 
         func makeCoordinator() -> Coordinator {
             return Coordinator(parent: self)
         }
 
-        func makeUIView(context: Context) -> UIView {
-            return context.coordinator.view
+        func makeUIViewController(context: Context) -> UIViewController {
+            return context.coordinator.uiViewController
         }
 
-        func updateUIView(_ uiView: UIView, context: Context) {
+        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
             context.coordinator.parent = self
             context.coordinator.presented = presented
         }
 
-        class Coordinator {
-
+        class Coordinator: NSObject {
             var parent: PaymentSheetPresenter
-            let view = UIView()
-            var presented: Bool {
+            init(parent: PaymentSheetPresenter) {
+                self.parent = parent
+            }
+
+            let uiViewController = UIViewController()
+
+            var presented: Bool = false {
                 didSet {
-                    switch (oldValue, presented) {
-                    case (false, false):
-                        break
-                    case (false, true):
-                        guard let viewController = findViewController(for: view) else {
-                            parent.presented = false
-                            return
-                        }
-                        presentPaymentSheet(on: viewController)
-                    case (true, false):
-                        guard let viewController = findViewController(for: view) else {
-                            parent.presented = true
-                            return
-                        }
-                        forciblyDismissPaymentSheet(from: viewController)
-                    case (true, true):
-                        break
+                    if oldValue != presented {
+                        presented ? presentPaymentSheet() : forciblyDismissPaymentSheet()
                     }
                 }
             }
 
-            init(parent: PaymentSheetPresenter) {
-                self.parent = parent
-                self.presented = parent.presented
-            }
+            private func presentPaymentSheet() {
+                let paymentSheet = parent.paymentSheet
 
-            func presentPaymentSheet(on controller: UIViewController) {
-                let presenter = findViewControllerPresenter(from: controller)
 
-                parent.paymentSheet?.present(from: presenter) { (result: PaymentSheetResult) in
+                paymentSheet.present(from: findViewControllerPresenter(from: uiViewController)) {
+                    (result: PaymentSheetResult) in
                     self.parent.presented = false
                     self.parent.onCompletion(result)
                 }
             }
 
-            func forciblyDismissPaymentSheet(from controller: UIViewController) {
-                if let bsvc = controller.presentedViewController as? BottomSheetViewController {
+            private func forciblyDismissPaymentSheet() {
+                if let bsvc = uiViewController.presentedViewController as? BottomSheetViewController
+                {
                     bsvc.didTapOrSwipeToDismiss()
                 }
             }
         }
     }
 
-    struct PaymentSheetFlowControllerPresenter: UIViewRepresentable {
+    struct PaymentSheetFlowControllerPresenter: UIViewControllerRepresentable {
         @Binding var presented: Bool
-        weak var paymentSheetFlowController: PaymentSheet.FlowController?
+        let paymentSheetFlowController: PaymentSheet.FlowController
         let action: FlowControllerAction
         let optionsCompletion: (() -> Void)?
         let paymentCompletion: ((PaymentSheetResult) -> Void)?
@@ -293,67 +280,52 @@ extension PaymentSheet {
             return Coordinator(parent: self)
         }
 
-        func makeUIView(context: Context) -> UIView {
-            return context.coordinator.view
+        func makeUIViewController(context: Context) -> UIViewController {
+            return context.coordinator.uiViewController
         }
 
-        func updateUIView(_ uiView: UIView, context: Context) {
+        func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
             context.coordinator.parent = self
             context.coordinator.presented = presented
         }
 
-
-        class Coordinator {
+        class Coordinator: NSObject {
             var parent: PaymentSheetFlowControllerPresenter
-            let view = UIView()
-            
-            var presented: Bool {
+            init(parent: PaymentSheetFlowControllerPresenter) {
+                self.parent = parent
+            }
+
+            let uiViewController = UIViewController()
+
+            var presented: Bool = false {
                 didSet {
-                    switch (oldValue, presented) {
-                    case (false, false):
-                        break
-                    case (false, true):
-                        guard let viewController = findViewController(for: view) else {
-                            parent.presented = false
-                            return
-                        }
-                        presentPaymentSheet(on: viewController)
-                    case (true, false):
-                        guard let viewController = findViewController(for: view) else {
-                            parent.presented = true
-                            return
-                        }
-                        forciblyDismissPaymentSheet(from: viewController)
-                    case (true, true):
-                        break
+                    if oldValue != presented {
+                        presented ? presentPaymentSheet() : forciblyDismissPaymentSheet()
                     }
                 }
             }
-            
-            init(parent: PaymentSheetFlowControllerPresenter) {
-                self.parent = parent
-                self.presented = parent.presented
-            }
 
-            func presentPaymentSheet(on controller: UIViewController) {
-                let presenter = findViewControllerPresenter(from: controller)
+            private func presentPaymentSheet() {
+                let flowController = parent.paymentSheetFlowController
+                let presenter = findViewControllerPresenter(from: uiViewController)
 
                 switch parent.action {
                 case .confirm:
-                    parent.paymentSheetFlowController?.confirm(from: presenter) { (result) in
+                    flowController.confirm(from: presenter) { result in
                         self.parent.presented = false
-                        self.parent.paymentCompletion?(result)
+                        self.parent.paymentCompletion!(result)
                     }
                 case .presentPaymentOptions:
-                    parent.paymentSheetFlowController?.presentPaymentOptions(from: presenter) {
+                    flowController.presentPaymentOptions(from: presenter) {
                         self.parent.presented = false
                         self.parent.optionsCompletion?()
                     }
                 }
             }
 
-            func forciblyDismissPaymentSheet(from controller: UIViewController) {
-                if let bsvc = controller.presentedViewController as? BottomSheetViewController {
+            private func forciblyDismissPaymentSheet() {
+                if let bsvc = uiViewController.presentedViewController as? BottomSheetViewController
+                {
                     bsvc.didTapOrSwipeToDismiss()
                 }
             }
@@ -418,14 +390,4 @@ func findViewControllerPresenter(from uiViewController: UIViewController) -> UIV
     }
 
     return presentingViewController
-}
-
-func findViewController(for uiView: UIView) -> UIViewController? {
-    if let nextResponder = uiView.next as? UIViewController {
-        return nextResponder
-    } else if let nextResponder = uiView.next as? UIView {
-        return findViewController(for: nextResponder)
-    } else {
-        return nil
-    }
 }

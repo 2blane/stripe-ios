@@ -7,7 +7,7 @@
 //
 
 #import <FBSnapshotTestCase/FBSnapshotTestCase.h>
-#import "STPTestUtils.h"
+
 
 
 @interface STPSTPViewWithSeparatorSnapshotTests : FBSnapshotTestCase
@@ -25,14 +25,14 @@
 - (void)testDefaultAppearance {
     STPViewWithSeparator *view = [[STPViewWithSeparator alloc] initWithFrame:CGRectMake(0.f, 0.f, 320.f, 44.f)];
     view.backgroundColor = [UIColor whiteColor];
-    STPSnapshotVerifyView(view, @"STPViewWithSeparator.defaultAppearance");
+    FBSnapshotVerifyView(view, @"STPViewWithSeparator.defaultAppearance");
 }
 
 - (void)testHiddenTopSeparator {
     STPViewWithSeparator *view = [[STPViewWithSeparator alloc] initWithFrame:CGRectMake(0.f, 0.f, 320.f, 44.f)];
     view.backgroundColor = [UIColor whiteColor];
     view.topSeparatorHidden = YES;
-    STPSnapshotVerifyView(view, @"STPViewWithSeparator.hiddenTopSeparator");
+    FBSnapshotVerifyView(view, @"STPViewWithSeparator.hiddenTopSeparator");
 }
 
 @end

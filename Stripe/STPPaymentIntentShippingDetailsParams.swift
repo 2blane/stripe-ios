@@ -57,16 +57,6 @@ public class STPPaymentIntentShippingDetailsParams: NSObject {
         return "<\(props.joined(separator: "; "))>"
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? Self else {
-            return false
-        }
-        return other.name == name &&
-        other.carrier == carrier &&
-        other.phone == phone &&
-        other.trackingNumber == trackingNumber &&
-        other.address == address
-    }
 }
 
 // MARK: - STPFormEncodable

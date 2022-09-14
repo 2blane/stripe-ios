@@ -7,7 +7,6 @@
 //
 
 @testable import Stripe
-@_spi(STP) import StripeCore
 
 class STPBECSDebitAccountNumberValidatorTests: XCTestCase {
     func testValidationStateForText() {

@@ -6,6 +6,8 @@
 //  Copyright © 2021 Stripe, Inc. All rights reserved.
 //
 
+#if !targetEnvironment(macCatalyst)
+
 import Foundation
 @_spi(STP) import StripeCore
 
@@ -44,11 +46,16 @@ struct VerificationSheetClosedAnalytic: VerificationSheetAnalytic {
 }
 
 /// Logged if there's an error presenting the sheet
-struct VerificationSheetFailedAnalytic: VerificationSheetAnalytic, ErrorAnalytic {
+struct VerificationSheetFailedAnalytic: VerificationSheetAnalytic {
     let event = STPAnalyticEvent.verificationSheetFailed
     let verificationSessionId: String?
-    let additionalParams: [String : Any] = [:]
     let error: Error
+
+    var additionalParams: [String : Any] {
+        return [
+            "error_dictionary": STPAnalyticsClient.serializeError(error as NSError)
+        ]
+    }
 }
 
 /// Helper to determine if we should log a failed analytic or closed analytic from the sheet's completion block
@@ -79,3 +86,5 @@ struct VerificationSheetCompletionAnalytic {
         }
     }
 }
+
+#endif

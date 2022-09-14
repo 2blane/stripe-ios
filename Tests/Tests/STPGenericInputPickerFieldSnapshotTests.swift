@@ -25,14 +25,14 @@ final class STPGenericInputPickerFieldSnapshotTests: FBSnapshotTestCase {
     }
 
     func testEmptySelection() {
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testWithDefaultSelection() {
         // The 0th row should be auto-selected when tapping into the field
         field.delegate?.textFieldDidBeginEditing?(field)
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 
     func testWithExplicitSelection() {
@@ -41,11 +41,12 @@ final class STPGenericInputPickerFieldSnapshotTests: FBSnapshotTestCase {
         // Explicitly select a row
         field.pickerView.selectRow(index, inComponent: 0, animated: false)
 
-        // Because we're interacting with the picker programatically, we need to explicitly
-        // call `resignFirstResponder` to commit the changes.
-        _ = field.resignFirstResponder()
+        // Because we're calling this programitacally, we need to explicitly
+        // call didSelectRow
+        field.pickerView.delegate?.pickerView?(
+            field.pickerView, didSelectRow: index, inComponent: 0)
 
-        STPSnapshotVerifyView(field)
+        FBSnapshotVerifyView(field)
     }
 }
 

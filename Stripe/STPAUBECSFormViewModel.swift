@@ -8,8 +8,6 @@
 
 import Foundation
 import UIKit
-@_spi(STP) import StripeCore
-@_spi(STP) import StripeUICore
 
 enum STPAUBECSFormViewField: Int {
     case name
@@ -81,7 +79,9 @@ class STPAUBECSFormViewModel {
                 "Error string displayed to user when they enter in an invalid BSB number.")
         } else if state == .incomplete && !editing {
             isErrorString.pointee = true
-            return String.Localized.incompleteBSBEntered
+            return STPLocalizedString(
+                "The BSB you entered is incomplete.",
+                "Error string displayed to user when they have entered an incomplete BSB number.")
         } else {
             isErrorString.pointee = false
             return STPBSBNumberValidator.identity(forText: input ?? "")

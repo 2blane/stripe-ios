@@ -90,6 +90,17 @@ extension STPAnalyticsClient {
         }
         return uiUsageLevel
     }
+
+    class func ocrTypeString() -> String {
+        if #available(iOS 13.0, macCatalyst 14.0, *) {
+            if STPAnalyticsClient.sharedClient.productUsage.contains(
+                STPCardScanner.stp_analyticsIdentifier)
+            {
+                return "stripe"
+            }
+        }
+        return "none"
+    }
 }
 
 // MARK: - Creation
@@ -170,22 +181,6 @@ extension STPAnalyticsClient {
 
 // MARK: - 3DS2 Flow
 extension STPAnalyticsClient {
-    func log3DS2AuthenticationRequestParamsFailed(
-        with configuration: STPPaymentConfiguration,
-        intentID: String,
-        error: NSError
-    ) {
-        log(analytic: GenericPaymentErrorAnalytic(
-            event: ._3DS2AuthenticationRequestParamsFailed,
-            paymentConfiguration: configuration,
-            productUsage: productUsage,
-            additionalParams: [
-                "intent_id": intentID
-            ],
-            error: error
-        ))
-    }
-    
     func log3DS2AuthenticateAttempt(
         with configuration: STPPaymentConfiguration,
         intentID: String
@@ -276,20 +271,6 @@ extension STPAnalyticsClient {
         ))
     }
 
-    func log3DS2RedirectUserCanceled(
-        with configuration: STPPaymentConfiguration,
-        intentID: String
-    ) {
-        log(analytic: GenericPaymentAnalytic(
-            event: ._3DS2RedirectUserCanceled,
-            paymentConfiguration: configuration,
-            productUsage: productUsage,
-            additionalParams: [
-                "intent_id": intentID,
-            ]
-        ))
-    }
-
     func log3DS2ChallengeFlowCompleted(
         with configuration: STPPaymentConfiguration,
         intentID: String,
@@ -311,14 +292,14 @@ extension STPAnalyticsClient {
         intentID: String,
         error: NSError
     ) {
-        log(analytic: GenericPaymentErrorAnalytic(
+        log(analytic: GenericPaymentAnalytic(
             event: ._3DS2ChallengeFlowErrored,
             paymentConfiguration: configuration,
             productUsage: productUsage,
             additionalParams: [
-                "intent_id": intentID
-            ],
-            error: error
+                "intent_id": intentID,
+                "error_dictionary": type(of: self).serializeError(error)
+            ]
         ))
     }
 }

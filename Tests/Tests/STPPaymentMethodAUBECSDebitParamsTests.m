@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-@import StripeCoreTestUtils;
+
 #import "STPTestingAPIClient.h"
 
 @interface STPPaymentMethodAUBECSDebitParamsTests : XCTestCase
@@ -53,7 +53,7 @@
         XCTAssertNotNil(paymentMethod.auBECSDebit.fingerprint, @"Missing fingerprint");
     }];
 
-    [self waitForExpectationsWithTimeout:TestConstants.STPTestingNetworkRequestTimeout handler:nil];
+    [self waitForExpectationsWithTimeout:STPTestingNetworkRequestTimeout handler:nil];
 }
 
 @end

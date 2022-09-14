@@ -45,7 +45,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 23;
+    return 18;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -73,7 +73,7 @@
             cell.textLabel.text = @"Alipay";
             break;
         case 7:
-            cell.textLabel.text = @"Klarna (Sources)";
+            cell.textLabel.text = @"Klarna";
             break;
         case 8:
             cell.textLabel.text = @"Bacs Debit";
@@ -104,21 +104,6 @@
             break;
         case 17:
             cell.textLabel.text = @"Afterpay";
-            break;
-        case 18:
-            cell.textLabel.text = @"Boleto";
-            break;
-        case 19:
-            cell.textLabel.text = @"Klarna (PaymentMethods)";
-            break;
-        case 20:
-            cell.textLabel.text = @"Affirm (PaymentMethods)";
-            break;
-        case 21:
-            cell.textLabel.text = @"US Bank Account";
-            break;
-        case 22:
-            cell.textLabel.text = @"US Bank Account w/ FinancialConnections";
             break;
     }
     return cell;
@@ -177,7 +162,7 @@
             break;
         }
         case 7: {
-            KlarnaSourcesExampleViewController *exampleVC = [KlarnaSourcesExampleViewController new];
+            KlarnaExampleViewController *exampleVC = [KlarnaExampleViewController new];
             exampleVC.delegate = self;
             viewController = exampleVC;
             break;
@@ -238,36 +223,6 @@
         }
         case 17: {
             AfterpayClearpayExampleViewController *exampleVC = [AfterpayClearpayExampleViewController new];
-            exampleVC.delegate = self;
-            viewController = exampleVC;
-            break;
-        }
-        case 18: {
-            BoletoExampleViewController *exampleVC = [BoletoExampleViewController new];
-            exampleVC.delegate = self;
-            viewController = exampleVC;
-            break;
-        }
-        case 19: {
-            KlarnaExampleViewController *exampleVC = [KlarnaExampleViewController new];
-            exampleVC.delegate = self;
-            viewController = exampleVC;
-            break;
-        }
-        case 20: {
-            AffirmExampleViewController *exampleVC = [AffirmExampleViewController new];
-            exampleVC.delegate = self;
-            viewController = exampleVC;
-            break;
-        }
-        case 21: {
-            USBankAccountExampleViewController *exampleVC = [USBankAccountExampleViewController new];
-            exampleVC.delegate = self;
-            viewController = exampleVC;
-            break;
-        }
-        case 22: {
-            USBankAccountFinancialConnectionsExampleViewController *exampleVC = [USBankAccountFinancialConnectionsExampleViewController new];
             exampleVC.delegate = self;
             viewController = exampleVC;
             break;

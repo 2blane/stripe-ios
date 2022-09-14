@@ -9,7 +9,6 @@
 import PassKit
 import UIKit
 @_spi(STP) import StripeCore
-@_spi(STP) import StripeUICore
 
 /// This view controller contains a shipping address collection form. It renders a right bar button item that submits the form, so it must be shown inside a `UINavigationController`. Depending on your configuration's shippingType, the view controller may present a shipping method selection form after the user enters an address.
 public class STPShippingAddressViewController: STPCoreTableViewController {
@@ -388,7 +387,7 @@ public class STPShippingAddressViewController: STPCoreTableViewController {
             preferredStyle: .alert)
         alertController.addAction(
             UIAlertAction(
-                title: String.Localized.ok,
+                title: STPLocalizedString("OK", "ok button"),
                 style: .cancel,
                 handler: nil))
         present(alertController, animated: true)

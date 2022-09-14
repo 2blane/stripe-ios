@@ -65,7 +65,7 @@ class STPPaymentOptionsViewControllerLocalizationTests: FBSnapshotTestCase {
 
         let viewToTest = stp_preparedAndSizedViewForSnapshotTest(from: paymentOptionsVC)!
 
-        STPSnapshotVerifyView(viewToTest, identifier: nil)
+        FBSnapshotVerifyView(viewToTest, identifier: nil)
         STPLocalizationUtils.overrideLanguage(to: nil)
     }
 

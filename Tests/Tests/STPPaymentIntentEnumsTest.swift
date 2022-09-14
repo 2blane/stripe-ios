@@ -139,8 +139,4 @@ class STPPaymentIntentEnumsTest: XCTestCase {
             STPPaymentIntentSetupFutureUsage(string: "GARBAGE"),
             .unknown)
     }
-    
-    func testStringConvertible() {
-        XCTAssertEqual(String(describing: STPPaymentIntentStatus.requiresAction), "requiresAction")
-    }
 }

@@ -7,7 +7,6 @@
 //
 
 @testable import Stripe
-@_spi(STP) @testable import StripeApplePay
 
 class STPApplePayTestDelegateiOS11: NSObject, STPApplePayContextDelegate {
     func applePayContext(

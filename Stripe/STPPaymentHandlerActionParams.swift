@@ -11,8 +11,9 @@ import Foundation
 #if canImport(Stripe3DS2)
     import Stripe3DS2
 #endif
-@_spi(STP) import StripeCore
 
+@available(iOSApplicationExtension, unavailable)
+@available(macCatalystApplicationExtension, unavailable)
 internal protocol STPPaymentHandlerActionParams: NSObject {
     var threeDS2Service: STDSThreeDS2Service? { get }
     var threeDS2Transaction: STDSTransaction? { get set }
@@ -26,6 +27,8 @@ internal protocol STPPaymentHandlerActionParams: NSObject {
     func complete(with status: STPPaymentHandlerActionStatus, error: NSError?)
 }
 
+@available(iOSApplicationExtension, unavailable)
+@available(macCatalystApplicationExtension, unavailable)
 internal class STPPaymentHandlerPaymentIntentActionParams: NSObject, STPPaymentHandlerActionParams {
 
     private var serviceInitialized = false
@@ -98,6 +101,8 @@ internal class STPPaymentHandlerPaymentIntentActionParams: NSObject, STPPaymentH
     }
 }
 
+@available(iOSApplicationExtension, unavailable)
+@available(macCatalystApplicationExtension, unavailable)
 internal class STPPaymentHandlerSetupIntentActionParams: NSObject, STPPaymentHandlerActionParams {
     private var serviceInitialized = false
 

@@ -74,7 +74,7 @@ public typealias STPRedirectContextPaymentIntentCompletionBlock = (String, Error
 /// See https://stripe.com/docs/sources/best-practices
 @available(iOSApplicationExtension, unavailable)
 @available(macCatalystApplicationExtension, unavailable)
-public class STPRedirectContext: NSObject, SFSafariViewControllerDelegate,
+public class STPRedirectContext: NSObject, SFSafariViewControllerDelegate, STPURLCallbackListener,
     UIViewControllerTransitioningDelegate, STPSafariViewControllerDismissalDelegate
 {
 
@@ -450,6 +450,16 @@ public class STPRedirectContext: NSObject, SFSafariViewControllerDelegate,
         })
     }
 
+    func handleURLCallback(_ url: URL) -> Bool {
+        stpDispatchToMainThreadIfNecessary({
+            self.handleRedirectCompletionWithError(
+                nil,
+                shouldDismissViewController: true)
+        })
+        // We handle all returned urls that match what we registered for
+        return true
+    }
+
     @objc dynamic func handleRedirectCompletionWithError(
         _ error: Error?,
         shouldDismissViewController: Bool
@@ -539,22 +549,6 @@ public class STPRedirectContext: NSObject, SFSafariViewControllerDelegate,
 
         let nativeURL = nativeURLString != nil ? URL(string: nativeURLString ?? "") : nil
         return nativeURL
-    }
-}
-
-@available(iOSApplicationExtension, unavailable)
-@available(macCatalystApplicationExtension, unavailable)
-/// :nodoc:
-@_spi(STP) extension STPRedirectContext: STPURLCallbackListener {
-    /// :nodoc:
-    @_spi(STP) public func handleURLCallback(_ url: URL) -> Bool {
-        stpDispatchToMainThreadIfNecessary({
-            self.handleRedirectCompletionWithError(
-                nil,
-                shouldDismissViewController: true)
-        })
-        // We handle all returned urls that match what we registered for
-        return true
     }
 }
 

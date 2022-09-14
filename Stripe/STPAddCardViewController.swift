@@ -8,7 +8,6 @@
 
 import UIKit
 @_spi(STP) import StripeCore
-@_spi(STP) import StripeUICore
 
 /// This view controller contains a credit card entry form that the user can fill out. On submission, it will use the Stripe API to convert the user's card details to a Stripe token. It renders a right bar button item that submits the form, so it must be shown inside a `UINavigationController`.
 public class STPAddCardViewController: STPCoreTableViewController, STPAddressViewModelDelegate,
@@ -67,19 +66,7 @@ public class STPAddCardViewController: STPCoreTableViewController, STPAddressVie
 
     /// The API Client to use to make requests.
     /// Defaults to `STPAPIClient.shared`
-    public var apiClient: STPAPIClient = STPAPIClient.shared
-    
-    /// The API Client to use to make requests.
-    /// Defaults to `STPAPIClient.shared`.
-    @available(swift, deprecated: 0.0.1, renamed: "apiClient")
-    @objc(apiClient) public var _objc_apiClient: _stpobjc_STPAPIClient {
-        get {
-            _stpobjc_STPAPIClient(apiClient: apiClient)
-        }
-        set {
-            apiClient = newValue._apiClient
-        }
-    }
+    @objc public var apiClient: STPAPIClient = STPAPIClient.shared
 
     /// Use init: or initWithConfiguration:theme:
     required init(theme: STPTheme?) {
@@ -129,32 +116,10 @@ public class STPAddCardViewController: STPCoreTableViewController, STPAddressVie
     private weak var cardImageView: UIImageView?
     private var doneItem: UIBarButtonItem?
     private var cardHeaderView: STPSectionHeaderView?
-    
     @available(iOS 13, macCatalyst 14, *)
-    private var cardScanner: STPCardScanner? {
-        get {
-            _cardScanner as? STPCardScanner
-        }
-        set {
-            _cardScanner = newValue
-        }
-    }
-
-    /// Storage for `cardScanner`.
-    private var _cardScanner: NSObject? = nil
-
+    private lazy var cardScanner: STPCardScanner? = nil
     @available(macCatalyst 14, *)
-    private var scannerCell: STPCardScannerTableViewCell? {
-        get {
-            _scannerCell as? STPCardScannerTableViewCell
-        }
-        set {
-            _scannerCell = newValue
-        }
-    }
-
-    /// Storage for `scannerCell`.
-    private var _scannerCell: NSObject? = nil
+    private lazy var scannerCell: STPCardScannerTableViewCell? = nil
 
     private var _isScanning = false
     private var isScanning: Bool {
@@ -380,7 +345,7 @@ public class STPAddCardViewController: STPCoreTableViewController, STPAddressVie
 
             cardHeaderView?.buttonHidden = false
             cardHeaderView?.button?.setTitle(
-                String.Localized.scan_card_title_capitalization,
+                STPLocalizedString("Scan Card", "Text for button to scan a credit card"),
                 for: .normal)
             cardHeaderView?.button?.addTarget(
                 self, action: #selector(scanCard), for: .touchUpInside)
@@ -507,7 +472,7 @@ public class STPAddCardViewController: STPCoreTableViewController, STPAddressVie
 
         alertController.addAction(
             UIAlertAction(
-                title: String.Localized.ok,
+                title: STPLocalizedString("OK", nil),
                 style: .cancel,
                 handler: nil))
 

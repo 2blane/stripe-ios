@@ -10,11 +10,10 @@ import XCTest
 
 @testable @_spi(STP) import Stripe
 @testable @_spi(STP) import StripeCore
-@testable @_spi(STP) import StripeApplePay
 
 class STPAPIClientTest: XCTestCase {
     func testSharedClient() {
-        XCTAssert(STPAPIClient.shared === STPAPIClient.shared)
+        XCTAssertEqual(STPAPIClient.shared, STPAPIClient.shared)
     }
 
     func testSetDefaultPublishableKey() {
