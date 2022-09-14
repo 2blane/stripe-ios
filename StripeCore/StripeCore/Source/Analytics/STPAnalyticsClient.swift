@@ -15,7 +15,7 @@ import UIKit
 
 @_spi(STP) public protocol STPAnalyticsClientProtocol {
     func addClass<T: STPAnalyticsProtocol>(toProductUsageIfNecessary klass: T.Type)
-    func log(analytic: Analytic)
+    func log(analytic: Analytic, apiClient: STPAPIClient)
 }
 
 @_spi(STP) public class STPAnalyticsClient: NSObject, STPAnalyticsClientProtocol {
@@ -25,9 +25,6 @@ import UIKit
     private var additionalInfoSet: Set<String> = Set()
     private(set) var urlSession: URLSession = URLSession(
         configuration: StripeAPIConfiguration.sharedUrlSessionConfiguration)
-
-    /// Determines the `publishable_key` value sent in analytics
-    public var publishableKeyProvider: PublishableKeyProvider?
 
     @objc public class func tokenType(fromParameters parameters: [AnyHashable: Any]) -> String? {
         let parameterKeys = parameters.keys
@@ -69,7 +66,7 @@ import UIKit
         return additionalInfoSet.sorted()
     }
 
-    public func logPayload(_ payload: [String: Any]) {
+    func logPayload(_ payload: [String: Any]) {
         #if DEBUG
         NSLog("LOG ANALYTICS: \(payload)")
         #endif
@@ -80,8 +77,7 @@ import UIKit
             return
         }
 
-        let request: NSMutableURLRequest = NSMutableURLRequest(url: url)
-
+        var request = URLRequest(url: url)
         request.stp_addParameters(toURL: payload)
         let task: URLSessionDataTask = urlSession.dataTask(with: request as URLRequest)
         task.resume()
@@ -92,14 +88,20 @@ import UIKit
      additional info, and product usage dictionary.
 
      - Parameter analytic: The analytic to log.
+     - Parameter apiClient: The STPAPIClient instance with which this payload should be associated (i.e. publishable key). Defaults to STPAPIClient.shared
      */
-    func payload(from analytic: Analytic) -> [String: Any] {
-        var payload = commonPayload()
+    func payload(from analytic: Analytic, apiClient: STPAPIClient = .shared) -> [String: Any] {
+        var payload = commonPayload(apiClient)
 
         payload["event"] = analytic.event.rawValue
         payload["additional_info"] = additionalInfo()
         payload["product_usage"] = productUsage.sorted()
-
+        
+        // Attach error information if this is an error analytic
+        if let errorAnalytic  = analytic as? ErrorAnalytic {
+            payload["error_dictionary"] = errorAnalytic.error.serializeForLogging()
+        }
+        
         payload.merge(analytic.params) { (_, new) in new }
         return payload
     }
@@ -109,15 +111,16 @@ import UIKit
      additional info, and product usage dictionary.
 
      - Parameter analytic: The analytic to log.
+     - Parameter apiClient: The STPAPIClient instance with which this payload should be associated (i.e. publishable key). Defaults to STPAPIClient.shared
      */
-    public func log(analytic: Analytic) {
+    public func log(analytic: Analytic, apiClient: STPAPIClient = .shared) {
         logPayload(payload(from: analytic))
     }
 }
 
 // MARK: - Helpers
 extension STPAnalyticsClient {
-    public func commonPayload() -> [String: Any] {
+    public func commonPayload(_ apiClient: STPAPIClient) -> [String: Any] {
         var payload: [String: Any] = [:]
         payload["bindings_version"] = StripeAPIConfiguration.STPSDKVersion
         payload["analytics_ua"] = "analytics.stripeios-1.0"
@@ -130,17 +133,10 @@ extension STPAnalyticsClient {
         }
         payload["app_name"] = Bundle.stp_applicationName() ?? ""
         payload["app_version"] = Bundle.stp_applicationVersion() ?? ""
-        payload["publishable_key"] = publishableKeyProvider?.publishableKey ?? "unknown"
+        payload["plugin_type"] = PluginDetector.shared.pluginType?.rawValue
+        payload["install"] = InstallMethod.current.rawValue
+        payload["publishable_key"] = apiClient.sanitizedPublishableKey ?? "unknown"
         
         return payload
-    }
-
-    public class func serializeError(_ error: NSError) -> [String: Any] {
-        // TODO(mludowise|MOBILESDK-193): Find a better solution than logging `userInfo`
-        return [
-            "domain": error.domain,
-            "code": error.code,
-            "user_info": error.userInfo,
-        ]
     }
 }

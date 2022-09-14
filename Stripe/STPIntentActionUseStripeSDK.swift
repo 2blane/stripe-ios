@@ -34,6 +34,10 @@ class STPIntentActionUseStripeSDK: NSObject {
     let serverTransactionID: String?
     let threeDSSourceID: String?
 
+    /// Publishable key to use for making authentication API calls (Link-specific)
+    let publishableKeyOverride: String?
+    let threeDS2IntentOverride: String?
+
     // MARK: - 3DS2 Redirect
     let redirectURL: URL?
 
@@ -46,6 +50,8 @@ class STPIntentActionUseStripeSDK: NSObject {
         directoryServerKeyID: String?,
         serverTransactionID: String?,
         threeDSSourceID: String?,
+        publishableKeyOverride: String?,
+        threeDS2IntentOverride: String?,
         redirectURL: URL?,
         allResponseFields: [AnyHashable: Any]
     ) {
@@ -57,6 +63,8 @@ class STPIntentActionUseStripeSDK: NSObject {
         self.directoryServerKeyID = directoryServerKeyID
         self.serverTransactionID = serverTransactionID
         self.threeDSSourceID = threeDSSourceID
+        self.publishableKeyOverride = publishableKeyOverride
+        self.threeDS2IntentOverride = threeDS2IntentOverride
         self.redirectURL = redirectURL
         self.allResponseFields = allResponseFields
         super.init()
@@ -68,6 +76,8 @@ class STPIntentActionUseStripeSDK: NSObject {
         directoryServerKeyID: String?,
         serverTransactionID: String?,
         threeDSSourceID: String?,
+        publishableKeyOverride: String?,
+        threeDS2IntentOverride: String?,
         allResponseFields: [AnyHashable: Any]
     ) {
         guard let certificate = encryptionInfo["certificate"] as? String,
@@ -88,6 +98,8 @@ class STPIntentActionUseStripeSDK: NSObject {
             directoryServerKeyID: directoryServerKeyID,
             serverTransactionID: serverTransactionID,
             threeDSSourceID: threeDSSourceID,
+            publishableKeyOverride: publishableKeyOverride,
+            threeDS2IntentOverride: threeDS2IntentOverride,
             redirectURL: nil,
             allResponseFields: allResponseFields)
     }
@@ -106,6 +118,8 @@ class STPIntentActionUseStripeSDK: NSObject {
             directoryServerKeyID: nil,
             serverTransactionID: nil,
             threeDSSourceID: threeDSSourceID,
+            publishableKeyOverride: nil,
+            threeDS2IntentOverride: nil,
             redirectURL: redirectURL,
             allResponseFields: allResponseFields)
     }
@@ -120,6 +134,8 @@ class STPIntentActionUseStripeSDK: NSObject {
             directoryServerKeyID: nil,
             serverTransactionID: nil,
             threeDSSourceID: nil,
+            publishableKeyOverride: nil,
+            threeDS2IntentOverride: nil,
             redirectURL: nil,
             allResponseFields: [:])
     }
@@ -162,6 +178,8 @@ extension STPIntentActionUseStripeSDK: STPAPIResponseDecodable {
                     directoryServerKeyID: encryptionInfo["key_id"] as? String,
                     serverTransactionID: dict["server_transaction_id"] as? String,
                     threeDSSourceID: dict["three_d_secure_2_source"] as? String,
+                    publishableKeyOverride: dict["publishable_key"] as? String,
+                    threeDS2IntentOverride: dict["three_d_secure_2_intent"] as? String,
                     allResponseFields: dict) as? Self
             } else {
                 return nil
@@ -187,6 +205,8 @@ extension STPIntentActionUseStripeSDK: STPAPIResponseDecodable {
                 directoryServerKeyID: nil,
                 serverTransactionID: nil,
                 threeDSSourceID: nil,
+                publishableKeyOverride: nil,
+                threeDS2IntentOverride: nil,
                 redirectURL: nil,
                 allResponseFields: dict) as? Self
         }

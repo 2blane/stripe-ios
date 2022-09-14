@@ -8,20 +8,25 @@
 
 import Foundation
 import UIKit
+@_spi(STP) import StripeUICore
 
 protocol LoadingViewControllerDelegate: AnyObject {
     func shouldDismiss(_ loadingViewController: LoadingViewController)
 }
 
 /// This just displays a spinner
+/// For internal SDK use only
+@objc(STP_Internal_LoadingViewController)
 class LoadingViewController: UIViewController, BottomSheetContentViewController {
     lazy var navigationBar: SheetNavigationBar = {
-        let navigationBar = SheetNavigationBar()
+        let navigationBar = SheetNavigationBar(isTestMode: isTestMode,
+                                               appearance: appearance)
         navigationBar.delegate = self
         return navigationBar
     }()
-
-    var isDismissable: Bool = true
+    
+    let appearance: PaymentSheet.Appearance
+    let isTestMode: Bool
 
     var requiresFullScreen: Bool {
         return false
@@ -40,8 +45,10 @@ class LoadingViewController: UIViewController, BottomSheetContentViewController 
     #endif
     weak var delegate: LoadingViewControllerDelegate?
 
-    init(delegate: LoadingViewControllerDelegate) {
+    init(delegate: LoadingViewControllerDelegate, appearance: PaymentSheet.Appearance, isTestMode: Bool) {
         self.delegate = delegate
+        self.appearance = appearance
+        self.isTestMode = isTestMode
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -51,7 +58,8 @@ class LoadingViewController: UIViewController, BottomSheetContentViewController 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        activityIndicator.color = appearance.colors.background.contrastingColor
         [activityIndicator].forEach {
             view.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false

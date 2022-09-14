@@ -12,6 +12,7 @@ import FBSnapshotTestCase
 
 @testable import StripeIdentity
 
+@available(iOS 14.3, *)
 final class VerificationFlowWebViewSnapshotTests: FBSnapshotTestCase {
 
     private var verificationWebView: VerificationFlowWebView!
@@ -45,7 +46,7 @@ final class VerificationFlowWebViewSnapshotTests: FBSnapshotTestCase {
 
     func testLoading() {
         verificationWebView.load()
-        FBSnapshotVerifyView(verificationWebView)
+        STPSnapshotVerifyView(verificationWebView)
     }
 
     func testLoaded() {
@@ -64,15 +65,16 @@ final class VerificationFlowWebViewSnapshotTests: FBSnapshotTestCase {
          */
         verificationWebView.webView.backgroundColor = .purple
 
-        FBSnapshotVerifyView(verificationWebView)
+        STPSnapshotVerifyView(verificationWebView)
     }
 
     func testError() {
         verificationWebView.displayRetryMessage()
-        FBSnapshotVerifyView(verificationWebView)
+        STPSnapshotVerifyView(verificationWebView)
     }
 }
 
+@available(iOS 14.3, *)
 extension VerificationFlowWebViewSnapshotTests: VerificationFlowWebViewDelegate {
     func verificationFlowWebView(_ view: VerificationFlowWebView, didChangeURL url: URL?) { }
 
