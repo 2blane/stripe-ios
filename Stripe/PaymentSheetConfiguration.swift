@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import PassKit
 @_spi(STP) import StripeCore
 
 // MARK: - Configuration
@@ -48,9 +49,44 @@ extension PaymentSheet {
             }
         }
     }
+    
+    /// Options for the default state of save payment method controls
+    /// @note Some jurisdictions may have rules governing the ability to default to opt-out behaviors
+    public enum SavePaymentMethodOptInBehavior {
+        
+        /// (Default) The SDK will apply opt-out behavior for supported countries.
+        /// Currently, this behavior is supported in the US.
+        case automatic
+        
+        /// The control will always default to unselected and users
+        /// will have to explicitly interact to save their payment method
+        case requiresOptIn
+        
+        /// The control will always default to selected and users
+        /// will have to explicitly interact to not save their payment method
+        case requiresOptOut
+        
+        var isSelectedByDefault: Bool {
+            switch self {
+            case .automatic:
+                // only enable the save checkbox by default for US
+                return Locale.current.regionCode == "US"
+            case .requiresOptIn:
+                return false
+            case .requiresOptOut:
+                return true
+            }
+        }
+    }
 
     /// Configuration for PaymentSheet
     public struct Configuration {
+        
+        /// If true, allows payment methods that do not move money at the end of the checkout. Defaults to false.
+        /// - Description: Some payment methods can't guarantee you will receive funds from your customer at the end of the checkout because they take time to settle (eg. most bank debits, like SEPA or ACH) or require customer action to complete (e.g. OXXO, Konbini, Boleto). If this is set to true, make sure your integration listens to webhooks for notifications on whether a payment has succeeded or not.
+        /// - Seealso: https://stripe.com/docs/payments/payment-methods#payment-notification
+        public var allowsDelayedPaymentMethods: Bool = false
+        
         /// The APIClient instance used to make requests to Stripe
         public var apiClient: STPAPIClient = STPAPIClient.shared
 
@@ -63,10 +99,14 @@ extension PaymentSheet {
         /// @see BillingAddressCollection
         var billingAddressCollectionLevel: BillingAddressCollectionLevel = .automatic
 
-        /// The color of the Buy or Add button. Defaults to `.systemBlue`
-        public var primaryButtonColor: UIColor = .systemBlue {
-            didSet {
-                ConfirmButton.BuyButton.appearance().backgroundColor = primaryButtonColor
+        /// The color of the Buy or Add button. Defaults to `.systemBlue` when `nil`.
+        public var primaryButtonColor: UIColor? {
+            set {
+                appearance.primaryButton.backgroundColor = newValue
+            }
+            
+            get {
+                return appearance.primaryButton.backgroundColor
             }
         }
         
@@ -102,6 +142,25 @@ extension PaymentSheet {
         /// web views used for additional authentication, e.g. 3DS2
         public var returnURL: String? = nil
 
+        /// PaymentSheet pre-populates fields with the values provided.
+        public var defaultBillingDetails: BillingDetails = BillingDetails()
+        
+        /// PaymentSheet offers users an option to save some payment methods for later use.
+        /// Default value is .automatic
+        /// @see SavePaymentMethodOptInBehavior
+        public var savePaymentMethodOptInBehavior: SavePaymentMethodOptInBehavior = .automatic
+        
+        internal var linkPaymentMethodsOnly: Bool = false
+        
+        /// Describes the appearance of PaymentSheet
+        public var appearance = PaymentSheet.Appearance.default
+        
+        /// 🏗 Under construction
+        /// A closure that returns the customer's shipping details.
+        /// This is used to display a "Billing address is same as shipping" checkbox if `defaultBillingDetails` is not provided
+        /// If `name` and `line1` are populated, it's also [attached to the PaymentIntent](https://stripe.com/docs/api/payment_intents/object#payment_intent_object-shipping) during payment.
+        @_spi(STP) public var shippingDetails: () -> AddressViewController.AddressDetails? = { return nil }
+        
         /// Initializes a Configuration with default values
         public init() {}
     }
@@ -131,11 +190,111 @@ extension PaymentSheet {
         /// The two-letter ISO 3166 code of the country of your business, e.g. "US"
         /// See your account's country value here https://dashboard.stripe.com/settings/account
         public let merchantCountryCode: String
+        
+        /// An array of payment summary item objects that summarize the amount of the payment. This property is identical to `PKPaymentRequest.paymentSummaryItems`.
+        /// If `nil`, we display a single line item with the amount on the PaymentIntent or "Amount pending" for SetupIntents.
+        /// If you're using a SetupIntent for a recurring payment, you should set this to display the amount you intend to charge, in accordance with https://developer.apple.com/design/human-interface-guidelines/technologies/apple-pay/subscriptions-and-donations
+        /// Follow Apple's documentation to set this property: https://developer.apple.com/documentation/passkit/pkpaymentrequest/1619231-paymentsummaryitems
+        public let paymentSummaryItems: [PKPaymentSummaryItem]?
 
+        /// Optional handler blocks for Apple Pay
+        public let customHandlers: Handlers?
+        
+        /// Custom handler blocks for Apple Pay
+        public struct Handlers {
+            /// Optionally configure additional information on your PKPaymentRequest.
+            /// This closure will be called after the PKPaymentRequest is created, but before the Apple Pay sheet is presented.
+            /// In your implementation, you can configure the PKPaymentRequest to add custom fields, such as `recurringPaymentRequest`.
+            /// See https://developer.apple.com/documentation/passkit/pkpaymentrequest for all configuration options.
+            /// - Parameter: The PKPaymentRequest created by PaymentSheet.
+            /// - Return: The PKPaymentRequest after your modifications.
+            public let paymentRequestHandler: ((PKPaymentRequest) -> PKPaymentRequest)?
+
+            /// Optionally configure additional information on your PKPaymentAuthorizationResult.
+            /// This closure will be called after the PaymentIntent or SetupIntent is confirmed, but before
+            /// the Apple Pay sheet has been closed.
+            /// In your implementation, you can configure the PKPaymentAuthorizationResult to add custom fields, such as `orderDetails`.
+            /// See https://developer.apple.com/documentation/passkit/pkpaymentauthorizationresult for all configuration options.
+            /// - Parameter $0: The PKPaymentAuthorizationResult created by PaymentSheet.
+            /// - Parameter $1: A completion handler. You must call this handler with the PKPaymentAuthorizationResult on the main queue
+            /// after applying your modifications.
+            /// For example:
+            /// ```
+            /// .authorizationResultHandler = { result, completion in
+            ///     result.orderDetails = PKPaymentOrderDetails(/* ... */)
+            ///     completion(result)
+            /// }
+            /// ```
+            /// WARNING: If you do not call the completion handler, your app will hang until the Apple Pay sheet times out.
+            public let authorizationResultHandler: ((PKPaymentAuthorizationResult, ((PKPaymentAuthorizationResult) -> Void)) -> Void)?
+            
+            /// Initializes the ApplePayConfiguration Handlers.
+            public init(paymentRequestHandler: ((PKPaymentRequest) -> PKPaymentRequest)? = nil, authorizationResultHandler: ((PKPaymentAuthorizationResult, ((PKPaymentAuthorizationResult) -> Void)) -> Void)? = nil) {
+                self.paymentRequestHandler = paymentRequestHandler
+                self.authorizationResultHandler = authorizationResultHandler
+            }
+        }
+        
         /// Initializes a ApplePayConfiguration
-        public init(merchantId: String, merchantCountryCode: String) {
+        public init(merchantId: String, merchantCountryCode: String, paymentSummaryItems: [PKPaymentSummaryItem]? = nil, customHandlers: Handlers? = nil) {
             self.merchantId = merchantId
             self.merchantCountryCode = merchantCountryCode
+            self.paymentSummaryItems = paymentSummaryItems
+            self.customHandlers = customHandlers
         }
     }
+    
+    /// An address.
+    public struct Address: Equatable {
+        /// City, district, suburb, town, or village.
+        /// - Note: The value set is displayed in the payment sheet as-is. Depending on the payment method, the customer may be required to edit this value.
+        public var city: String?
+        
+        /// Two-letter country code (ISO 3166-1 alpha-2).
+        public var country: String?
+        
+        /// Address line 1 (e.g., street, PO Box, or company name).
+        /// - Note: The value set is displayed in the payment sheet as-is. Depending on the payment method, the customer may be required to edit this value.
+        public var line1: String?
+        
+        /// Address line 2 (e.g., apartment, suite, unit, or building).
+        /// - Note: The value set is displayed in the payment sheet as-is. Depending on the payment method, the customer may be required to edit this value.
+        public var line2: String?
+        
+        /// ZIP or postal code.
+        /// - Note: The value set is displayed in the payment sheet as-is. Depending on the payment method, the customer may be required to edit this value.
+        public var postalCode: String?
+        
+        /// State, county, province, or region.
+        /// - Note: The value set is displayed in the payment sheet as-is. Depending on the payment method, the customer may be required to edit this value.
+        public var state: String?
+        
+        /// Initializes an Address
+        public init(city: String? = nil, country: String? = nil, line1: String? = nil, line2: String? = nil, postalCode: String? = nil, state: String? = nil) {
+            self.city = city
+            self.country = country
+            self.line1 = line1
+            self.line2 = line2
+            self.postalCode = postalCode
+            self.state = state
+        }
+    }
+    
+    /// Billing details of a customer
+    public struct BillingDetails: Equatable {
+        /// The customer's billing address
+        public var address: Address = Address()
+        
+        /// The customer's email
+        /// - Note: The value set is displayed in the payment sheet as-is. Depending on the payment method, the customer may be required to edit this value.
+        public var email: String?
+        
+        /// The customer's full name
+        /// - Note: The value set is displayed in the payment sheet as-is. Depending on the payment method, the customer may be required to edit this value.
+        public var name: String?
+        
+        /// The customer's phone number without formatting (e.g. 5551234567)
+        public var phone: String?
+    }
+    
 }

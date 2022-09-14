@@ -1,14 +1,11 @@
 # Shared variables used in our localization scripts
 
+# DO NOT EDIT! edit l10n/config.rb instead.
+
+# TODO(ramont): Remove after migrating other scripts to Ruby.
+
 # Directories for projects that need to be localized.
-# After adding a directory to this list,
-# run `./ci_scripts/create_localizable_strings_files.sh` to create the directory
-# structure and drag the resulting `Resources` folder into the project.
-LOCALIZATION_DIRECTORIES=(
-  "Stripe"
-  "StripeCore/StripeCore"
-  "StripeIdentity/StripeIdentity"
-)
+LOCALIZATION_DIRECTORIES=($(ruby -e "\$LOAD_PATH << Dir.pwd;require './ci_scripts/l10n/config';puts LOCALIZATION_DIRECTORIES"))
 
 # Languages that we localize to
-LANGUAGES="da,de,en-GB,es-419,es,fi,fr-CA,fr,hu,it,ja,ko,mt,nb,nl,nn-NO,pt-BR,pt-PT,ru,sv,tr,zh-Hans,zh-HK,zh-Hant"
+LANGUAGES=($(ruby -I . -e "\$LOAD_PATH << Dir.pwd;require './ci_scripts/l10n/config';puts LANGUAGES.join(',')"))

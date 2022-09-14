@@ -8,16 +8,23 @@
 
 import SafariServices
 import UIKit
+@_spi(STP) import StripeCore
+@_spi(STP) import StripeUICore
 
 protocol BottomSheetContentViewController: UIViewController {
     var navigationBar: SheetNavigationBar { get }
-    var isDismissable: Bool { get }
     var requiresFullScreen: Bool { get }
     func didTapOrSwipeToDismiss()
 }
 
 /// A VC containing a content view controller and manages the layout of its SheetNavigationBar.
-class BottomSheetViewController: UIViewController, PanModalPresentable {
+/// For internal SDK use only
+@objc(STP_Internal_BottomSheetViewController)
+class BottomSheetViewController: UIViewController, BottomSheetPresentable {
+    struct Constants {
+        static let keyboardAvoidanceEdgePadding: CGFloat = 16
+    }
+
     // MARK: - Views
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -55,6 +62,9 @@ class BottomSheetViewController: UIViewController, PanModalPresentable {
         contentViewController = toVC
         return popped
     }
+    
+    let isTestMode: Bool
+    let appearance: PaymentSheet.Appearance
 
     private var contentViewController: BottomSheetContentViewController {
         didSet(oldContentViewController) {
@@ -66,23 +76,37 @@ class BottomSheetViewController: UIViewController, PanModalPresentable {
             addChild(contentViewController)
             self.contentContainerView.addArrangedSubview(self.contentViewController.view)
             self.contentViewController.didMove(toParent: self)
-            if let panModalPresentationController = rootParent.presentationController
-                as? PanModalPresentationController
+            if let presentationController = rootParent.presentationController
+                as? BottomSheetPresentationController
             {
-                panModalPresentationController.forceFullHeight =
+                presentationController.forceFullHeight =
                     contentViewController.requiresFullScreen
             }
             self.contentContainerView.layoutIfNeeded()
 
-            animateHeightChange()
+            animateHeightChange(forceAnimation: true)
             // Add its navigation bar if necessary
             oldContentViewController.navigationBar.removeFromSuperview()
             navigationBarContainerView.addArrangedSubview(contentViewController.navigationBar)
         }
     }
+    
+    var contentRequiresFullScreen: Bool {
+        return contentViewController.requiresFullScreen
+    }
 
-    required init(contentViewController: BottomSheetContentViewController) {
+    let didCancelNative3DS2: () -> ()
+    
+    required init(
+        contentViewController: BottomSheetContentViewController,
+        appearance: PaymentSheet.Appearance,
+        isTestMode: Bool,
+        didCancelNative3DS2: @escaping () -> ()
+    ) {
         self.contentViewController = contentViewController
+        self.appearance = appearance
+        self.isTestMode = isTestMode
+        self.didCancelNative3DS2 = didCancelNative3DS2
 
         super.init(nibName: nil, bundle: nil)
 
@@ -92,6 +116,7 @@ class BottomSheetViewController: UIViewController, PanModalPresentable {
         contentViewController.didMove(toParent: self)
         contentContainerView.addArrangedSubview(contentViewController.view)
         navigationBarContainerView.addArrangedSubview(contentViewController.navigationBar)
+        self.view.backgroundColor = appearance.colors.background
     }
 
     required init?(coder: NSCoder) {
@@ -99,8 +124,6 @@ class BottomSheetViewController: UIViewController, PanModalPresentable {
     }
 
     // MARK: -
-    private var cachedContentHeight: CGFloat = 0
-    private var cachedKeyboardHeight: CGFloat = 0
     private var scrollViewHeightConstraint: NSLayoutConstraint? = nil
 
     /// :nodoc:
@@ -156,22 +179,46 @@ class BottomSheetViewController: UIViewController, PanModalPresentable {
 
     private func registerForKeyboardNotifications() {
         NotificationCenter.default.addObserver(
-            self, selector: #selector(adjustForKeyboard),
+            self, selector: #selector(keyboardDidHide),
             name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(
-            self, selector: #selector(adjustForKeyboard),
-            name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+            self, selector: #selector(keyboardDidShow),
+            name: UIResponder.keyboardWillShowNotification, object: nil)
     }
 
     @objc
-    private func adjustForKeyboard(notification: Notification) {
+    private func keyboardDidShow(notification: Notification) {
+        // Hack to get orientation without using `UIApplication`
+        let landscape = UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+        // Handle iPad landscape edge case where `scrollRectToVisible` isn't sufficient
+        if UIDevice.current.userInterfaceIdiom == .pad && landscape {
+            guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+            scrollView.contentInset.bottom = view.convert(keyboardFrame.cgRectValue, from: nil).size.height
+            return
+        }
+        
         if let firstResponder = view.firstResponder() {
-            let firstResponderFrame = scrollView.convert(firstResponder.frame, from: firstResponder)
+            let firstResponderFrame = scrollView.convert(firstResponder.bounds, from: firstResponder).insetBy(
+                dx: -Constants.keyboardAvoidanceEdgePadding,
+                dy: -Constants.keyboardAvoidanceEdgePadding
+            )
             scrollView.scrollRectToVisible(firstResponderFrame, animated: true)
         }
     }
+    
+    @objc
+    private func keyboardDidHide(notification: Notification) {
+        if let firstResponder = view.firstResponder() {
+            let firstResponderFrame = scrollView.convert(firstResponder.bounds, from: firstResponder).insetBy(
+                dx: -Constants.keyboardAvoidanceEdgePadding,
+                dy: -Constants.keyboardAvoidanceEdgePadding
+            )
+            scrollView.scrollRectToVisible(firstResponderFrame, animated: true)
+            scrollView.contentInset.bottom = .zero
+        }
+    }
 
-    // MARK: - PanModalPresentable
+    // MARK: - BottomSheetPresentable
 
     var panScrollable: UIScrollView? {
         // Returning the scroll view causes contentInset issues; I'm not sure why.
@@ -202,10 +249,13 @@ extension BottomSheetViewController: UIScrollViewDelegate {
     }
 }
 
-// MARK: - STPAuthenticationContext
-extension BottomSheetViewController: STPAuthenticationContext {
+// MARK: - PaymentSheetAuthenticationContext
+@available(iOSApplicationExtension, unavailable)
+@available(macCatalystApplicationExtension, unavailable)
+extension BottomSheetViewController: PaymentSheetAuthenticationContext {
+    
     func authenticationPresentingViewController() -> UIViewController {
-        return self
+        return findTopMostPresentedViewController() ?? self
     }
 
     func configureSafariViewController(_ viewController: SFSafariViewController) {
@@ -215,18 +265,13 @@ extension BottomSheetViewController: STPAuthenticationContext {
 
     func authenticationContextWillDismiss(_ viewController: UIViewController) {
         view.setNeedsLayout()
-        if let panModalPresentationController = rootParent.presentationController
-            as? PanModalPresentationController
-        {
-            panModalPresentationController.setNeedsLayoutUpdate()
-        }
     }
 
     func present(
         _ threeDS2ChallengeViewController: UIViewController, completion: @escaping () -> Void
     ) {
         let threeDS2ViewController = BottomSheet3DS2ViewController(
-            challengeViewController: threeDS2ChallengeViewController)
+            challengeViewController: threeDS2ChallengeViewController, appearance: appearance, isTestMode: isTestMode)
         threeDS2ViewController.delegate = self
         pushContentViewController(threeDS2ViewController)
         completion()
@@ -271,6 +316,6 @@ extension BottomSheetViewController: BottomSheet3DS2ViewControllerDelegate {
     func bottomSheet3DS2ViewControllerDidCancel(
         _ bottomSheet3DS2ViewController: BottomSheet3DS2ViewController
     ) {
-        STPPaymentHandler.shared().cancel3DS2ChallengeFlow()
+        didCancelNative3DS2()
     }
 }
