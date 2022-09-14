@@ -188,7 +188,18 @@ public class STPCardFormView: STPFormView {
     @objc
     public internal(set) var cardParams: STPPaymentMethodParams? {
         get {
-            if self.showCVCZip {
+            guard case .valid = numberField.validator.validationState,
+                              let cardNumber = numberField.validator.inputValue,
+                              case .valid = cvcField.validator.validationState,
+                              let cvc = cvcField.validator.inputValue,
+                              case .valid = expiryField.validator.validationState,
+                              let expiryStrings = expiryField.expiryStrings,
+                              let monthInt = Int(expiryStrings.month),
+                              let yearInt = Int(expiryStrings.year),
+                  let billingDetails = billingAddressSubForm.billingDetails else {
+                return nil
+            }
+            /*if self.showCVCZip {
                 guard case .valid = numberField.validator.validationState,
                       let cardNumber = numberField.validator.inputValue,
                       case .valid = cvcField.validator.validationState,
@@ -237,7 +248,7 @@ public class STPCardFormView: STPFormView {
 
                 return STPPaymentMethodParams(
                     card: cardParams, billingDetails: bp, metadata: nil)
-            }
+            }*/
 
             if let bindedPaymentMethodParams = _bindedPaymentMethodParams {
                 updateBindedPaymentMethodParams()
@@ -328,8 +339,9 @@ public class STPCardFormView: STPFormView {
     }
 
     let style: STPCardFormViewStyle
-
-    let showCVCZip: Bool
+    
+//    //GEOJI EDITS
+//    let showCVCZip: Bool
 
     /**
      Public initializer for `STPCardFormView`.
@@ -359,18 +371,18 @@ public class STPCardFormView: STPFormView {
         includeCardScanning: Bool = true,
         mergeBillingFields: Bool = false,
         style: STPCardFormViewStyle = .standard,
-        showCVCZip: Bool = true, //GEOJI EDITS - add the showCVCZip field
+//        showCVCZip: Bool = true, //GEOJI EDITS - add the showCVCZip field
         postalCodeRequirement: STPPostalCodeRequirement = .standard,
         prefillDetails: PrefillDetails? = nil,
         inputMode: STPCardNumberInputTextField.InputMode = .standard
-    ) {
+    /*) {
         self.init(numberField: STPCardNumberInputTextField(),
                   cvcField: STPCardCVCInputTextField(),
                   expiryField: STPCardExpiryInputTextField(),
                   billingAddressSubForm: BillingAddressSubForm(billingAddressCollection: billingAddressCollection, showCVCZip: showCVCZip),
                   includeCardScanning: includeCardScanning,
                   mergeBillingFields: mergeBillingFields,
-                  style: style, showCVCZip: showCVCZip)
+                  style: style, showCVCZip: showCVCZip)*/
     ) {
         self.init(numberField: STPCardNumberInputTextField(inputMode: inputMode, prefillDetails: prefillDetails),
                   cvcField: STPCardCVCInputTextField(prefillDetails: prefillDetails),
@@ -392,7 +404,7 @@ public class STPCardFormView: STPFormView {
                   includeCardScanning: Bool,
                   mergeBillingFields: Bool,
                   style: STPCardFormViewStyle = .standard,
-                  showCVCZip: Bool = false //GEOJI EDITS - add the showCVCZip field
+//                  showCVCZip: Bool = false //GEOJI EDITS - add the showCVCZip field
                   postalCodeRequirement: STPPostalCodeRequirement = .standard,
                   prefillDetails: PrefillDetails? = nil,
                   inputMode: STPCardNumberInputTextField.InputMode = .standard
@@ -402,8 +414,8 @@ public class STPCardFormView: STPFormView {
         self.expiryField = expiryField
         self.billingAddressSubForm = billingAddressSubForm
         self.style = style
-        //GEOJI EDITS - set the showCVCZip stuff
-        self.showCVCZip = showCVCZip
+//        //GEOJI EDITS - set the showCVCZip stuff
+//        self.showCVCZip = showCVCZip
         self.postalCodeRequirement = postalCodeRequirement
         self.inputMode = inputMode
 
@@ -433,12 +445,14 @@ public class STPCardFormView: STPFormView {
         }
 
         //GEOJI EDITS - set the rows based on if we are showing CVC & Zip.
-        var rows: [[STPFormInput]] = []
-        if self.showCVCZip {
-            rows = [[numberField], [expiryField, cvcField]]
-        } else {
-            rows = [[numberField], [expiryField]]
-        }
+//        var rows: [[STPFormInput]] = []
+//        if self.showCVCZip {
+//            rows = [[numberField], [expiryField, cvcField]]
+//        } else {
+//            rows = [[numberField], [expiryField]]
+//        }
+        var rows: [[STPFormInput]] = [[numberField],
+                                      [expiryField], [cvcField]]
         if mergeBillingFields {
             rows.append(contentsOf: billingAddressSubForm.formSection.rows)
         }
@@ -688,13 +702,15 @@ extension STPCardFormView {
             billingDetails.address = address
         }
 
-        //GEOJI EDITS - variable for showCVCZip field
-        let showCVCZip: Bool
+//        //GEOJI EDITS - variable for showCVCZip field
+//        let showCVCZip: Bool
 
         //GEOJI EDITS - added showCVCZip as a field
-        required init(billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel, showCVCZip: Bool) {
-            //GEOJI EDITS - set the showCVCZip field
-            self.showCVCZip = showCVCZip
+        required init(billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel,
+                              postalCodeRequirement: STPPostalCodeRequirement) {
+//        required init(billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel, showCVCZip: Bool) {
+//            //GEOJI EDITS - set the showCVCZip field
+//            self.showCVCZip = showCVCZip
             postalCodeField = STPPostalCodeInputTextField(postalCodeRequirement: postalCodeRequirement)
 
             let rows: [[STPInputTextField]]
@@ -707,17 +723,22 @@ extension STPCardFormView {
                 line2Field = nil
                 cityField = nil
 
-                //GEOJI EDITS - show or hide the CVC and Zip if necessary
-                if showCVCZip {
-                    rows = [
-                        [countryPickerField],
-                        [postalCodeField],
-                    ]
-                    title = String.Localized.country_or_region
-                } else {
-                    rows = []
-                    title = STPLocalizedString("", "")
-                }
+                rows = [
+                    [countryPickerField],
+                    [postalCodeField],
+                ]
+                title = String.Localized.country_or_region
+//                //GEOJI EDITS - show or hide the CVC and Zip if necessary
+//                if showCVCZip {
+//                    rows = [
+//                        [countryPickerField],
+//                        [postalCodeField],
+//                    ]
+//                    title = String.Localized.country_or_region
+//                } else {
+//                    rows = []
+//                    title = STPLocalizedString("", "")
+//                }
 
             case .required:
                 stateField = STPGenericInputTextField(

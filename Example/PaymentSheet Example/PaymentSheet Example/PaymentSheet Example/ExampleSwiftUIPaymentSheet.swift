@@ -66,10 +66,13 @@ class MyBackendModel: ObservableObject {
                 configuration.customer = .init(
                     id: customerId, ephemeralKeySecret: customerEphemeralKeySecret)
                 configuration.returnURL = "payments-example://stripe-redirect"
-
+                
+                // Set allowsDelayedPaymentMethods to true if your business can handle payment methods that complete payment after a delay, like SEPA Debit and Sofort.
+                configuration.allowsDelayedPaymentMethods = true
+                
                 //GEOJI EDITS - set the showCVCZip stuff
-                configuration.showCVCZip = false
-
+                //configuration.showCVCZip = false
+                
                 DispatchQueue.main.async {
                     self.paymentSheet = PaymentSheet(
                         paymentIntentClientSecret: paymentIntentClientSecret,

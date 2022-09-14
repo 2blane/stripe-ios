@@ -149,14 +149,14 @@ class PaymentSheetViewController: UIViewController {
     }()
 
     //GEOJI EDITS - turn off the camera
-    func goingToDismiss() {
-        print("Going to Dismiss! Cleanup the camera")
-        if self.mode == .addingNew {
-            if #available(iOS 13.0, macCatalyst 14.0, *) {
-                addPaymentMethodViewController.cleanup()
-            }
-        }
-    }
+//    func goingToDismiss() {
+//        print("Going to Dismiss! Cleanup the camera")
+//        if self.mode == .addingNew {
+//            if #available(iOS 13.0, macCatalyst 14.0, *) {
+//                addPaymentMethodViewController.cleanup()
+//            }
+//        }
+//    }
 
     // MARK: - Init
 
@@ -405,11 +405,11 @@ class PaymentSheetViewController: UIViewController {
     private func didTapBuyButton() {
         switch mode {
         case .addingNew:
-            guard let newPaymentOption = addPaymentMethodViewController.paymentOption else {
-                //GEOJI EDITS - no payment option
-                //assertionFailure()
-                return
-            }
+//            guard let newPaymentOption = addPaymentMethodViewController.paymentOption else {
+//                //GEOJI EDITS - no payment option
+//                //assertionFailure()
+//                return
+//            }
             if let buyButtonOverrideBehavior = addPaymentMethodViewController.overrideBuyButtonBehavior {
                 addPaymentMethodViewController.didTapCallToActionButton(behavior: buyButtonOverrideBehavior, from: self)
             } else {
@@ -423,8 +423,8 @@ class PaymentSheetViewController: UIViewController {
             guard
                 let selectedPaymentOption = savedPaymentOptionsViewController.selectedPaymentOption
             else {
-                //GEOJI EDITS - no payment option
-                //assertionFailure()
+                //GEOJI EDITS - no payment option, was commented out.
+                assertionFailure()
                 return
             }
             pay(with: selectedPaymentOption)
@@ -513,7 +513,7 @@ extension PaymentSheetViewController: BottomSheetContentViewController {
     func didTapOrSwipeToDismiss() {
         if isDismissable {
             //GEOJI EDITS - dismiss the view and cleanup the camera.
-            self.goingToDismiss()
+//            self.goingToDismiss()
             delegate?.paymentSheetViewControllerDidCancel(self)
         }
     }
@@ -591,9 +591,9 @@ extension PaymentSheetViewController: AddPaymentMethodViewControllerDelegate {
         error = nil  // clear error
         updateUI()
 
-        //GEOJI EDITS - AutoPay if necessary
-        print("Auto-Pay if necessary")
-        self.didTapBuyButton()
+//        //GEOJI EDITS - AutoPay if necessary
+//        print("Auto-Pay if necessary")
+//        self.didTapBuyButton()
     }
 
     func shouldOfferLinkSignup(_ viewController: AddPaymentMethodViewController) -> Bool {
@@ -614,8 +614,8 @@ extension PaymentSheetViewController: AddPaymentMethodViewControllerDelegate {
 extension PaymentSheetViewController: SheetNavigationBarDelegate {
 
     func sheetNavigationBarDidClose(_ sheetNavigationBar: SheetNavigationBar) {
-        //GEOJI EDITS - going to dismiss - make sure the camera light is off
-        self.goingToDismiss()
+//        //GEOJI EDITS - going to dismiss - make sure the camera light is off
+//        self.goingToDismiss()
         delegate?.paymentSheetViewControllerDidCancel(self)
         // If the customer was editing saved payment methods, exit edit mode
         if savedPaymentOptionsViewController.isRemovingPaymentMethods {

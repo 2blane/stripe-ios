@@ -19,7 +19,7 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
     let billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel
     let merchantDisplayName: String
     //GEOJI EDITS - adds the showCVCZip variable.
-    let showCVCZip: Bool
+    //let showCVCZip: Bool
     let savePaymentMethodOptInBehavior: PaymentSheet.SavePaymentMethodOptInBehavior
 
     let checkboxText: String?
@@ -46,8 +46,9 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
     }
 
     lazy var formView: STPCardFormView = {
-        let formView = STPCardFormView(billingAddressCollection: billingAddressCollection, showCVCZip: self.showCVCZip)
-        formView.internalDelegate = self
+        //GEOJI EDITS
+        //let formView = STPCardFormView(billingAddressCollection: billingAddressCollection, showCVCZip: self.showCVCZip)
+        //formView.internalDelegate = self
         let formView = STPCardFormView(billingAddressCollection: billingAddressCollection,
                                        includeCardScanning: includeCardScanning,
                                        postalCodeRequirement: .upe,
@@ -127,20 +128,20 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
     }
 
     init(
-        shouldDisplaySaveThisPaymentMethodCheckbox: Bool,
-        billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel,
-        merchantDisplayName: String,
-        showCVCZip: Bool //GEOJI EDITS - adds the showCVCZip field
+//        shouldDisplaySaveThisPaymentMethodCheckbox: Bool,
+//        billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel,
+//        merchantDisplayName: String,
+//        showCVCZip: Bool, //GEOJI EDITS - adds the showCVCZip field
         checkboxText: String?,
         includeCardScanning: Bool,
         prefillDetails: STPCardFormView.PrefillDetails? = nil,
         inputMode: STPCardNumberInputTextField.InputMode = .standard,
         configuration: PaymentSheet.Configuration
     ) {
-        self.billingAddressCollection = billingAddressCollection
-        self.merchantDisplayName = merchantDisplayName
-        //GEOJI EDITS - set the showCVCZip field
-        self.showCVCZip = showCVCZip
+//        self.billingAddressCollection = billingAddressCollection
+//        self.merchantDisplayName = merchantDisplayName
+//        //GEOJI EDITS - set the showCVCZip field
+//        self.showCVCZip = showCVCZip
         self.billingAddressCollection = configuration.billingAddressCollectionLevel
         self.merchantDisplayName = configuration.merchantDisplayName
         self.savePaymentMethodOptInBehavior = configuration.savePaymentMethodOptInBehavior
@@ -200,8 +201,8 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
         ])
 
         //GEOJI EDITS - AUTOMATICALLY TAP THE SCAN CARD BUTTON
-        let bb = UIButton()
-        self.scanButtonTapped(bb)
+//        let bb = UIButton()
+//        self.scanButtonTapped(bb)
     }
 
     required init?(coder: NSCoder) {
@@ -216,10 +217,10 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
     }
 
     //GEOJI EDITS - cleans up the view as it is about to be dismissed.
-    @available(iOS 13, macCatalyst 14, *)
-    public func cleanup() {
-        self.cardScanningView?.stop()
-    }
+//    @available(iOS 13, macCatalyst 14, *)
+//    public func cleanup() {
+//        self.cardScanningView?.stop()
+//    }
 
     func updateDefaultCheckboxStateIfNeeded() {
         guard !checkboxView.hasReceivedTap else {

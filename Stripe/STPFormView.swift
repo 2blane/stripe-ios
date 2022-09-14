@@ -418,7 +418,7 @@ public class STPFormView: UIView, STPFormInputValidationObserver {
         guard let textField = input as? STPInputTextField,
             let sectionView = sectionView(for: textField)
         else {
-            //assertionFailure("Should not receive updates for uncontained inputs")
+            assertionFailure("Should not receive updates for uncontained inputs")
             return
         }
 

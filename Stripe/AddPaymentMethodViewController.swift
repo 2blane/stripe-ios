@@ -330,7 +330,7 @@ class AddPaymentMethodViewController: UIViewController {
                 self.delegate?.updateErrorLabel(for: genericError)
                 return
             }
-        }()
+        /*}()
         let formConfiguration = FormElement.Configuration(
             saveMode: saveMode,
             merchantDisplayName: configuration.merchantDisplayName
@@ -361,7 +361,7 @@ class AddPaymentMethodViewController: UIViewController {
             case .przelewy24:
                 return FormElement.makeP24(configuration: formConfiguration)
             default:
-                fatalError()
+                fatalError()*/
             guard let financialConnectionsResult = result else {
                 self.delegate?.updateErrorLabel(for: genericError)
                 return
@@ -389,15 +389,15 @@ class AddPaymentMethodViewController: UIViewController {
                                               financialConnectionsCompletion: financialConnectionsCompletion)
         }
     }
-
-    //GEOJI EDITS - cleans up the view as it is about to be dismissed.
+    
+    /*//GEOJI EDITS - cleans up the view as it is about to be dismissed.
     @available(iOS 13, macCatalyst 14, *)
     public func cleanup() {
         print("Cleanup on AddPaymentMethodViewController!")
         if let pmf = paymentMethodFormElement as? CardDetailsEditView {
             pmf.cleanup()
         }
-    }
+    }*/
 }
 
 // MARK: - PaymentMethodTypeCollectionViewDelegate

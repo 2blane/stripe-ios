@@ -248,9 +248,9 @@ class CardScanningView: UIView, STPCardScannerDelegate {
     }
 
     //GEOJI EDITS - cleans up the view as it is about to be dismissed.
-    public func cleanup() {
-        self.cardScanner?.stop()
-    }
+//    public func cleanup() {
+//        self.cardScanner?.stop()
+//    }
 
     override func willMove(toWindow newWindow: UIWindow?) {
         if newWindow == nil {
