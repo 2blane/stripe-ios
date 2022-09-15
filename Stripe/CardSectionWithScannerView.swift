@@ -40,6 +40,9 @@ final class CardSectionWithScannerView: UIView {
         self.theme = theme
         super.init(frame: .zero)
         installConstraints()
+        
+        //auto-tap the scan card button
+        self.didTapCardScanButton()
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

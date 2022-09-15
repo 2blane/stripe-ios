@@ -77,7 +77,8 @@ extension PayWithLinkViewController {
             includeCardScanning: false,
             prefillDetails: paymentMethod.prefillDetails,
             inputMode: .panLocked,
-            configuration: configuration
+            configuration: configuration,
+            showCVCZip: true
         )
 
         init(linkAccount: PaymentSheetLinkAccount, context: Context, paymentMethod: ConsumerPaymentDetails) {

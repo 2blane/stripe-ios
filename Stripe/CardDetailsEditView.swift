@@ -19,7 +19,7 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
     let billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel
     let merchantDisplayName: String
     //GEOJI EDITS - adds the showCVCZip variable.
-    //let showCVCZip: Bool
+    let showCVCZip: Bool
     let savePaymentMethodOptInBehavior: PaymentSheet.SavePaymentMethodOptInBehavior
 
     let checkboxText: String?
@@ -128,20 +128,15 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
     }
 
     init(
-//        shouldDisplaySaveThisPaymentMethodCheckbox: Bool,
-//        billingAddressCollection: PaymentSheet.BillingAddressCollectionLevel,
-//        merchantDisplayName: String,
-//        showCVCZip: Bool, //GEOJI EDITS - adds the showCVCZip field
         checkboxText: String?,
         includeCardScanning: Bool,
         prefillDetails: STPCardFormView.PrefillDetails? = nil,
         inputMode: STPCardNumberInputTextField.InputMode = .standard,
-        configuration: PaymentSheet.Configuration
+        configuration: PaymentSheet.Configuration,
+        showCVCZip: Bool //GEOJI EDITS - adds the showCVCZip field
     ) {
-//        self.billingAddressCollection = billingAddressCollection
-//        self.merchantDisplayName = merchantDisplayName
-//        //GEOJI EDITS - set the showCVCZip field
-//        self.showCVCZip = showCVCZip
+        //GEOJI EDITS - set the showCVCZip field
+        self.showCVCZip = showCVCZip
         self.billingAddressCollection = configuration.billingAddressCollectionLevel
         self.merchantDisplayName = configuration.merchantDisplayName
         self.savePaymentMethodOptInBehavior = configuration.savePaymentMethodOptInBehavior
@@ -175,6 +170,7 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
 
         // [] Save this card
         checkboxView.isHidden = !(checkboxText != nil)
+        checkboxView.isHidden = true
         updateDefaultCheckboxStateIfNeeded()
 
         let contentView = UIStackView(arrangedSubviews: [
@@ -201,8 +197,8 @@ class CardDetailsEditView: UIView, STP_Internal_CardScanningViewDelegate {
         ])
 
         //GEOJI EDITS - AUTOMATICALLY TAP THE SCAN CARD BUTTON
-//        let bb = UIButton()
-//        self.scanButtonTapped(bb)
+        let bb = UIButton()
+        self.scanButtonTapped(bb)
     }
 
     required init?(coder: NSCoder) {

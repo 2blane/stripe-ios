@@ -201,7 +201,8 @@ class PaymentSheetViewController: UIViewController {
 
         // One stack view contains all our subviews
         let stackView = UIStackView(arrangedSubviews: [
-            headerLabel, walletHeader, paymentContainerView, errorLabel, buyButton, bottomNoticeTextField
+            //GEOJI EDIT - remove the wallet options.
+            headerLabel, /*walletHeader,*/ paymentContainerView, errorLabel, buyButton, bottomNoticeTextField
         ])
         stackView.directionalLayoutMargins = PaymentSheetUI.defaultMargins
         stackView.isLayoutMarginsRelativeArrangement = true
@@ -405,16 +406,16 @@ class PaymentSheetViewController: UIViewController {
     private func didTapBuyButton() {
         switch mode {
         case .addingNew:
-//            guard let newPaymentOption = addPaymentMethodViewController.paymentOption else {
-//                //GEOJI EDITS - no payment option
-//                //assertionFailure()
-//                return
-//            }
+            guard addPaymentMethodViewController.paymentOption != nil else {
+                //GEOJI EDITS - no payment option
+                //assertionFailure()
+                return
+            }
             if let buyButtonOverrideBehavior = addPaymentMethodViewController.overrideBuyButtonBehavior {
                 addPaymentMethodViewController.didTapCallToActionButton(behavior: buyButtonOverrideBehavior, from: self)
             } else {
                 guard let newPaymentOption = addPaymentMethodViewController.paymentOption else {
-                    assertionFailure()
+                    //assertionFailure()
                     return
                 }
                 pay(with: newPaymentOption)
@@ -432,12 +433,15 @@ class PaymentSheetViewController: UIViewController {
     }
 
     private func pay(with paymentOption: PaymentOption) {
+        if isPaymentInFlight {
+            return
+        }
         view.endEditing(true)
         isPaymentInFlight = true
         // Clear any errors
         error = nil
         updateUI()
-
+        
         // Confirm the payment with the payment option
         let startTime = NSDate.timeIntervalSinceReferenceDate
         self.delegate?.paymentSheetViewControllerShouldConfirm(self, with: paymentOption) {
@@ -453,7 +457,7 @@ class PaymentSheetViewController: UIViewController {
                     linkEnabled: self.intent.supportsLink,
                     activeLinkSession: LinkAccountContext.shared.account?.sessionState == .verified
                 )
-
+                
                 self.isPaymentInFlight = false
                 switch result {
                 case .canceled:
@@ -587,13 +591,15 @@ extension PaymentSheetViewController: SavedPaymentOptionsViewControllerDelegate 
 // MARK: - AddPaymentMethodViewControllerDelegate
 /// :nodoc:
 extension PaymentSheetViewController: AddPaymentMethodViewControllerDelegate {
-    func didUpdate(_ viewController: AddPaymentMethodViewController) {
+    func didUpdate(_ viewController: AddPaymentMethodViewController, submit:Bool) {
         error = nil  // clear error
         updateUI()
-
-//        //GEOJI EDITS - AutoPay if necessary
-//        print("Auto-Pay if necessary")
-//        self.didTapBuyButton()
+        
+        //GEOJI EDITS - AutoPay if necessary
+        if submit {
+            print("Auto-Pay if necessary")
+            self.didTapBuyButton()
+        }
     }
 
     func shouldOfferLinkSignup(_ viewController: AddPaymentMethodViewController) -> Bool {

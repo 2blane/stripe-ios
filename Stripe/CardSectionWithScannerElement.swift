@@ -35,7 +35,7 @@ final class CardSection: ContainerElement {
     let expiryElement: TextFieldElement
     let theme: ElementsUITheme
     
-    init(theme: ElementsUITheme = .default) {
+    init(theme: ElementsUITheme = .default, showCVCZip:Bool = true) {
         self.theme = theme
         let panElement = PaymentMethodElementWrapper(TextFieldElement.PANConfiguration(), theme: theme) {  field, params in
             cardParams(for: params).number = field.text
@@ -69,7 +69,7 @@ final class CardSection: ContainerElement {
             title: sectionTitle,
             elements: [
                 panElement,
-                SectionElement.MultiElementRow([expiryElement, cvcElement], theme: theme)
+                showCVCZip ? SectionElement.MultiElementRow([expiryElement, cvcElement], theme: theme) : expiryElement
             ], theme: theme
         )
         
@@ -123,5 +123,7 @@ extension CardSection: CardSectionWithScannerViewDelegate {
         if let lastCompletedElement = [panElement, expiryElement].last(where: { !$0.text.isEmpty }) {
             lastCompletedElement.delegate?.continueToNextField(element: lastCompletedElement)
         }
+        
+        //TODO: Autosubmit the form right here!
     }
 }

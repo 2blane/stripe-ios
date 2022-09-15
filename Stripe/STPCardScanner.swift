@@ -249,15 +249,16 @@ class STPCardScanner: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         do {
             try self.captureDevice?.lockForConfiguration()
             self.captureDevice?.autoFocusRangeRestriction = .near
-//            //GEOJI EDITS - turn on the backlight if necessary.
-//            if self.captureDevice?.isLowLightBoostSupported ?? false {
-//                print("LOW LIGHT BOOST ENABLED")
-//                self.captureDevice?.automaticallyEnablesLowLightBoostWhenAvailable = true
-//            }
-//            if self.captureDevice?.isTorchModeSupported(AVCaptureDevice.TorchMode.auto) ?? false {
-//                self.captureDevice?.torchMode = .auto
-//            }
-        } catch {
+            //GEOJI EDITS - turn on the backlight if necessary.
+            if self.captureDevice?.isLowLightBoostSupported ?? false {
+                print("LOW LIGHT BOOST ENABLED")
+                self.captureDevice?.automaticallyEnablesLowLightBoostWhenAvailable = true
+            }
+            if self.captureDevice?.isTorchModeSupported(AVCaptureDevice.TorchMode.auto) ?? false {
+                self.captureDevice?.torchMode = .auto
+            }
+        } catch let e {
+            print("configure camera error: \(e.localizedDescription)")
         }
         
         //GEOJI EDITS - unlock control of the camera

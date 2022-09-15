@@ -11,7 +11,7 @@ import UIKit
 @_spi(STP) import StripeUICore
 @_spi(STP) import StripeCore
 protocol AddPaymentMethodViewControllerDelegate: AnyObject {
-    func didUpdate(_ viewController: AddPaymentMethodViewController)
+    func didUpdate(_ viewController: AddPaymentMethodViewController, submit:Bool)
     func shouldOfferLinkSignup(_ viewController: AddPaymentMethodViewController) -> Bool
     func updateErrorLabel(for: Error?)
 }
@@ -179,7 +179,7 @@ class AddPaymentMethodViewController: UIViewController {
         view.backgroundColor = CompatibleColor.systemBackground
 
         let stackView = UIStackView(arrangedSubviews: [
-            paymentMethodTypesView, paymentMethodDetailsContainerView,
+            /*paymentMethodTypesView,*/  paymentMethodDetailsContainerView,
         ])
         stackView.bringSubviewToFront(paymentMethodTypesView)
         stackView.axis = .vertical
@@ -279,13 +279,13 @@ class AddPaymentMethodViewController: UIViewController {
     }
 
     private func makeElement(for type: PaymentSheet.PaymentMethodType) -> PaymentMethodElement {
-        let offerSaveToLinkWhenSupported = delegate?.shouldOfferLinkSignup(self) ?? false
-
+//        let offerSaveToLinkWhenSupported = delegate?.shouldOfferLinkSignup(self) ?? false
+        
         let formElement = PaymentSheetFormFactory(
             intent: intent,
             configuration: configuration,
             paymentMethod: type,
-            offerSaveToLinkWhenSupported: offerSaveToLinkWhenSupported,
+            offerSaveToLinkWhenSupported: false,//offerSaveToLinkWhenSupported,
             linkAccount: linkAccount
         ).make()
         formElement.delegate = self
@@ -405,7 +405,7 @@ class AddPaymentMethodViewController: UIViewController {
 extension AddPaymentMethodViewController: PaymentMethodTypeCollectionViewDelegate {
     func didUpdateSelection(_ paymentMethodTypeCollectionView: PaymentMethodTypeCollectionView) {
         updateFormElement()
-        delegate?.didUpdate(self)
+        delegate?.didUpdate(self, submit: false)
     }
 }
 
@@ -413,11 +413,11 @@ extension AddPaymentMethodViewController: PaymentMethodTypeCollectionViewDelegat
 
 extension AddPaymentMethodViewController: ElementDelegate {
     func continueToNextField(element: Element) {
-        delegate?.didUpdate(self)
+        delegate?.didUpdate(self, submit: true)
     }
 
     func didUpdate(element: Element) {
-        delegate?.didUpdate(self)
+        delegate?.didUpdate(self, submit: false)
         animateHeightChange()
     }
 }

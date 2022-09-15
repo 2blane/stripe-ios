@@ -77,6 +77,17 @@ extension PaymentSheet {
                 return true
             }
         }
+        
+        var isVisible: Bool {
+            switch self {
+            case .automatic:
+                return false
+            case .requiresOptIn:
+                return true
+            case .requiresOptOut:
+                return true
+            }
+        }
     }
 
     /// Configuration for PaymentSheet
@@ -113,7 +124,7 @@ extension PaymentSheet {
         //GEOJI EDITS - adds a parameter to determine if we are going to show the CVC & Zip
         /// If true, then CVC & Zip are shown and must be entered.
         /// If false, then CVC & Zip are not shown.
-//        public var showCVCZip: Bool = true
+        public var showCVCZip: Bool = true
 
         private var styleRawValue: Int = 0  // SheetStyle.automatic.rawValue
         /// The color styling to use for PaymentSheet UI

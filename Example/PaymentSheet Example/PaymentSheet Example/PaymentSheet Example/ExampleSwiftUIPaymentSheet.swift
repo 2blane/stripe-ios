@@ -27,7 +27,10 @@ struct ExampleSwiftUIPaymentSheet: View {
             if let result = model.paymentResult {
                 ExamplePaymentStatusView(result: result)
             }
-        }.onAppear { model.preparePaymentSheet() }
+        }.onAppear {
+            model.preparePaymentSheet()
+            print("Prepared payment sheet")
+        }
     }
 
 }
@@ -68,10 +71,11 @@ class MyBackendModel: ObservableObject {
                 configuration.returnURL = "payments-example://stripe-redirect"
                 
                 // Set allowsDelayedPaymentMethods to true if your business can handle payment methods that complete payment after a delay, like SEPA Debit and Sofort.
-                configuration.allowsDelayedPaymentMethods = true
+                configuration.allowsDelayedPaymentMethods = false
+                configuration.savePaymentMethodOptInBehavior = .automatic
                 
                 //GEOJI EDITS - set the showCVCZip stuff
-                //configuration.showCVCZip = false
+                configuration.showCVCZip = false
                 
                 DispatchQueue.main.async {
                     self.paymentSheet = PaymentSheet(

@@ -21,9 +21,8 @@ extension PaymentSheetFormFactory {
         )
         let shouldDisplaySaveCheckbox: Bool = saveMode == .userSelectable && !canSaveToLink
         let cardFormElement = FormElement(elements: [
-            CardSection(theme: theme),
-            makeBillingAddressSection(collectionMode: .countryAndPostal(countriesRequiringPostalCollection: ["US", "GB", "CA"]),
-                                      countries: nil),
+            CardSection(theme: theme, showCVCZip: configuration.showCVCZip),
+            configuration.showCVCZip ? makeBillingAddressSection(collectionMode: .countryAndPostal(countriesRequiringPostalCollection: ["US", "GB", "CA"]), countries: nil) : nil,
             shouldDisplaySaveCheckbox ? saveCheckbox : nil
         ], theme: theme)
         if isLinkEnabled {

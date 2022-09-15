@@ -495,7 +495,7 @@ extension ChoosePaymentOptionViewController: SavedPaymentOptionsViewControllerDe
 //MARK: - AddPaymentMethodViewControllerDelegate
 /// :nodoc:
 extension ChoosePaymentOptionViewController: AddPaymentMethodViewControllerDelegate {
-    func didUpdate(_ viewController: AddPaymentMethodViewController) {
+    func didUpdate(_ viewController: AddPaymentMethodViewController, submit:Bool) {
         error = nil  // clear error
 
         if case .link(let linkOption) = selectedPaymentOption,
